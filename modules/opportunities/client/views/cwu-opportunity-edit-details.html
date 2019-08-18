@@ -39,9 +39,19 @@
           "help":"<p>To the best of your ability, estimate a fair price for the amount of work you think it should take a qualified developer to meet the acceptance criteria. It is best to over-estimate.</p> <p>Right now, Code With Us opportunities may be offered to a maximum of $70,000.</p>"
         }'>
         <select name="earn" ng-model="vm.opportunity.earn" ng-value="v" id="earn" class="form-control"
-                ng-options="v for v in vm.amounts" ng-change="vm.updateFeeAmount()">
+                ng-options="v as (v|currency) for v in vm.amounts" ng-change="vm.updateFeeAmount()">
           <option value="">Select reward amount</option>
         </select>
+      </form-display>
+      <form-display x-form="vm.opportunityForm" class="col-sm-12 col-md-3"
+                    x-options='{
+      "title": "Total Price",
+      "name": "feePrice",
+      "help": "<p>The Sovrin Foundation collects a small fee for each opportunity posted to the Dev Exchange of 5%. The amount shown is to total cost to you, the provider. </p>",
+      "id": "feePrice"
+      }'>
+        <input type="text" class='form-control' ng-model='vm.opportunity.fee'
+               disabled="" aria-disabled="true">
       </form-display>
     </div>
 

@@ -1,11 +1,11 @@
 'use strict';
 
-import { StateService } from '@uirouter/core';
-import angular, { IFilterCurrency, IFormController, uiNotification } from 'angular';
-import { IDataService } from '../../../core/client/services/DataService';
-import { IProject } from '../../../projects/shared/IProjectDTO';
-import { IAuthenticationService } from '../../../users/client/services/AuthenticationService';
-import { IOpportunitiesService, IOpportunityResource } from '../services/OpportunitiesService';
+import {StateService} from '@uirouter/core';
+import angular, {IFilterCurrency, IFormController, uiNotification} from 'angular';
+import {IDataService} from '../../../core/client/services/DataService';
+import {IProject} from '../../../projects/shared/IProjectDTO';
+import {IAuthenticationService} from '../../../users/client/services/AuthenticationService';
+import {IOpportunitiesService, IOpportunityResource} from '../services/OpportunitiesService';
 
 export default class OpportunityEditCWUController {
 	public static $inject = ['$state', '$filter', 'opportunity', 'editing', 'projects', 'AuthenticationService', 'Notification', 'DataService', 'ask', 'TinyMceConfiguration', 'OpportunitiesService'];
@@ -137,7 +137,7 @@ export default class OpportunityEditCWUController {
 
 			// if creating a new opportunity, transition to the edit view after saving
 			if (!this.editing) {
-				this.$state.go('opportunityadmin.editcwu', { opportunityId: this.opportunity.code });
+				this.$state.go('opportunityadmin.editcwu', {opportunityId: this.opportunity.code});
 			}
 		} catch (error) {
 			this.Notification.error({
@@ -229,10 +229,10 @@ export default class OpportunityEditCWUController {
 	}
 
 	public updateFeeAmount() {
-		if (this.opportunity.earn.length > 0) {
-			const amount = Number(this.opportunity.earn.replace(/[^0-9.-]+/g, ''));
+		if (this.opportunity.earn > 0) {
 			const feeAmount = 1.05;
-			this.opportunity.fee = this.$filter('currency')((amount * feeAmount));
+			this.opportunity.fee = this.$filter('currency')((this.opportunity.earn * feeAmount));
+			this.opportunity.postedAmount = this.$filter('currency')(this.opportunity.earn);
 		}
 	}
 
@@ -240,8 +240,7 @@ export default class OpportunityEditCWUController {
 		this.amounts = [];
 		let i: any;
 		for (i = 500; i <= 70000; i += 500) {
-			const x = this.$filter('currency')(i);
-			this.amounts.push(x);
+			this.amounts.push(i);
 		}
 	}
 

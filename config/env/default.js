@@ -3,7 +3,7 @@
 var path = require('path');
 module.exports = {
 	app: {
-		title: 'BCDevExchange - The BC Developer\'s Exchange',
+		title: 'Sovrin Foundation - Developer\'s Exchange',
 		description: 'Better ways for government and developers to work together',
 		keywords: 'developer, government, codewithus, agile, digitial service',
 		googleAnalyticsTrackingID: process.env.GOOGLE_ANALYTICS_TRACKING_ID || 'GOOGLE_ANALYTICS_TRACKING_ID',
@@ -90,7 +90,7 @@ module.exports = {
 		xssProtection: true
 	},
 	logo: 'modules/core/client/img/brand/logo.png',
-	favicon: 'modules/core/client/img/brand/favicon.ico',
+	favicon: 'modules/core/client/img/brand/favicon.png',
 	uploads: {
 		diskStorage: {
 			destination: function(req, file, cb) {

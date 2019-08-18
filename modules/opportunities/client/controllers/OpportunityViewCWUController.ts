@@ -208,7 +208,7 @@ export default class OpportunityViewCWUController implements IController {
 				`Opportunity: ${this.opportunity.name}`,
 				`Opporunity ID: ${this.opportunity.code}`,
 				`Opportunity Type: Code With Us`,
-				`Opportunity Amount: $${this.opportunity.earn}`,
+				`Opportunity Amount: ${this.opportunity.postedAmount}`,
 				`Created on ${new Date(this.opportunity.created).toLocaleString()} PST`
 			],
 			styles: {
