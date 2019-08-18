@@ -28,7 +28,8 @@
           "name":"location",
           "help":"Where is your office?"
         }'>
-        <select name="location" ng-model="vm.opportunity.location" id="location" class="form-control" ng-options="v as v for v in vm.cities">
+        <select name="location" ng-model="vm.opportunity.location" id="location" class="form-control"
+                ng-options="v as v for v in vm.cities">
           <option value="">Select Location</option>
         </select>
       </form-display>
@@ -37,7 +38,8 @@
           "name":"reward",
           "help":"<p>To the best of your ability, estimate a fair price for the amount of work you think it should take a qualified developer to meet the acceptance criteria. It is best to over-estimate.</p> <p>Right now, Code With Us opportunities may be offered to a maximum of $70,000.</p>"
         }'>
-        <select name="earn" ng-model="vm.opportunity.earn" id="earn" class="form-control" ng-options="v as (v|currency) for v in vm.amounts">
+        <select name="earn" ng-model="vm.opportunity.earn" ng-value="v" id="earn" class="form-control"
+                ng-options="v for v in vm.amounts" ng-change="vm.updateFeeAmount()">
           <option value="">Select reward amount</option>
         </select>
       </form-display>

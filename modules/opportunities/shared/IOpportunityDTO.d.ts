@@ -1,10 +1,10 @@
-import { ICapability } from "../../capabilities/shared/ICapabilityDTO";
-import { ICapabilitySkill } from "../../capabilities/shared/ICapabilitySkillDTO";
-import { IProgram } from "../../programs/shared/IProgramDTO";
-import { IProject } from "../../projects/shared/IProjectDTO";
-import { IProposal } from "../../proposals/shared/IProposalDTO";
-import { IUser } from "../../users/shared/IUserDTO";
-import { Types } from "mongoose";
+import { ICapability } from '../../capabilities/shared/ICapabilityDTO';
+import { ICapabilitySkill } from '../../capabilities/shared/ICapabilitySkillDTO';
+import { IProgram } from '../../programs/shared/IProgramDTO';
+import { IProject } from '../../projects/shared/IProjectDTO';
+import { IProposal } from '../../proposals/shared/IProposalDTO';
+import { IUser } from '../../users/shared/IUserDTO';
+import { Types } from 'mongoose';
 
 export interface IPhase {
 	isImplementation?: boolean;
@@ -75,7 +75,7 @@ export interface IContract {
 }
 
 export interface IOpportunity {
-    _id: string;
+	_id: string;
 	code: string;
 	opportunityTypeCd: string;
 	name: string;
@@ -123,7 +123,8 @@ export interface IOpportunity {
 	evaluation: string;
 	criteria: string;
 	skills: string[];
-	earn?: number;
+	earn?: string;
+	fee?: string,
 	start: Date;
 	endDate: Date;
 	assignor?: IUser;

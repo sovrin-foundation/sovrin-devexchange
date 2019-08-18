@@ -1,20 +1,20 @@
 'use strict';
 
 import { StateService } from '@uirouter/core';
-import angular, { IFormController, uiNotification } from 'angular';
+import angular, { IFilterCurrency, IFormController, uiNotification } from 'angular';
 import { IDataService } from '../../../core/client/services/DataService';
 import { IProject } from '../../../projects/shared/IProjectDTO';
 import { IAuthenticationService } from '../../../users/client/services/AuthenticationService';
 import { IOpportunitiesService, IOpportunityResource } from '../services/OpportunitiesService';
 
 export default class OpportunityEditCWUController {
-	public static $inject = ['$state', 'opportunity', 'editing', 'projects', 'AuthenticationService', 'Notification', 'DataService', 'ask', 'TinyMceConfiguration', 'OpportunitiesService'];
+	public static $inject = ['$state', '$filter', 'opportunity', 'editing', 'projects', 'AuthenticationService', 'Notification', 'DataService', 'ask', 'TinyMceConfiguration', 'OpportunitiesService'];
 
 	public isAdmin: boolean;
 	public isGov: boolean;
 	public errorFields: any[];
 	public canPublish: boolean;
-	public amounts: number[];
+	public amounts: any[];
 	public cities: string[];
 	public opportunityForm: IFormController;
 	public projectLink: boolean;
@@ -24,6 +24,7 @@ export default class OpportunityEditCWUController {
 
 	constructor(
 		private $state: StateService,
+		private $filter: IFilterCurrency,
 		public opportunity: IOpportunityResource,
 		public editing: boolean,
 		public projects: IProject[],
@@ -86,7 +87,7 @@ export default class OpportunityEditCWUController {
 		if (!this.opportunity.name) {
 			this.Notification.error({
 				message: 'You must enter a title for your opportunity',
-				title: "<i class='fas fa-exclamation-triangle'></i> Errors on Page"
+				title: '<i class=\'fas fa-exclamation-triangle\'></i> Errors on Page'
 			});
 			return;
 		}
@@ -141,7 +142,7 @@ export default class OpportunityEditCWUController {
 		} catch (error) {
 			this.Notification.error({
 				title: 'Error',
-				message: "<i class='fas fa-exclamation-triangle'></i> " + error.data.message
+				message: '<i class=\'fas fa-exclamation-triangle\'></i> ' + error.data.message
 			});
 		}
 	}
@@ -183,7 +184,7 @@ export default class OpportunityEditCWUController {
 			} catch (error) {
 				this.Notification.error({
 					title: 'Error',
-					message: "<i class='fas fa-exclamation-triangle'></i> " + error.data.message
+					message: '<i class=\'fas fa-exclamation-triangle\'></i> ' + error.data.message
 				});
 			}
 		}
@@ -222,16 +223,25 @@ export default class OpportunityEditCWUController {
 		} catch (error) {
 			this.Notification.error({
 				title: 'Error',
-				message: "<i class='fas fa-exclamation-triangle'></i> " + error.data.message
+				message: '<i class=\'fas fa-exclamation-triangle\'></i> ' + error.data.message
 			});
+		}
+	}
+
+	public updateFeeAmount() {
+		if (this.opportunity.earn.length > 0) {
+			const amount = Number(this.opportunity.earn.replace(/[^0-9.-]+/g, ''));
+			const feeAmount = 1.05;
+			this.opportunity.fee = this.$filter('currency')((amount * feeAmount));
 		}
 	}
 
 	private initDropDownAmounts() {
 		this.amounts = [];
-		let i: number;
+		let i: any;
 		for (i = 500; i <= 70000; i += 500) {
-			this.amounts.push(i);
+			const x = this.$filter('currency')(i);
+			this.amounts.push(x);
 		}
 	}
 
