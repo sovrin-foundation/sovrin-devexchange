@@ -77,6 +77,7 @@
     "passport": "0.4.0",
     "passport-github": "1.1.0",
     "passport-local": "1.0.0",
+    "passport-saml": "^1.1.0",
     "pdfmake": "^0.1.40",
     "phantomjs-prebuilt": "2.1.16",
     "popper.js": "^1.14.4",

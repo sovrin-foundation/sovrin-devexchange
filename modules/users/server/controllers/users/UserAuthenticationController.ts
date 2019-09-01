@@ -260,6 +260,19 @@ class UserAuthenticationController {
 			});
 		}
 	};
+	/**
+	 * SAML Provider Call
+	 */
+	public samlCall = (strategy, scope) => {
+		return (req, res, next) => {
+			passport.authenticate(strategy, { failureRedirect: '/', failureFlash: true })(req, res, next);
+		};
+	};
+
+	public samlResponse = (all) => {
+		// tslint:disable-next-line:no-console
+		console.log(all);
+	};
 
 	private handleLoginResponse(res: Response, user: IUserModel) {
 		return (loginErr: any) => {
@@ -268,7 +281,7 @@ class UserAuthenticationController {
 			} else {
 				res.json(user);
 			}
-		}
+		};
 	}
 }
 
