@@ -3,7 +3,7 @@
 import {Document, Model, Schema} from 'mongoose';
 import MongooseController from '../../../../config/lib/MongooseController';
 import CoreServerHelpers from '../../../core/server/controllers/CoreServerHelpers';
-import {IOpportunity} from '../../shared/IOpportunityDTO';
+import {IAcceptedCurrency, IOpportunity} from '../../shared/IOpportunityDTO';
 
 export interface IOpportunityModel extends IOpportunity, Document {
 	_id: any;
@@ -27,6 +27,11 @@ const TeamQuestionSchema = new Schema({
 	guideline: {type: String},
 	wordLimit: {type: Number, default: 300},
 	questionScore: {type: Number, default: 1}
+});
+
+const CurrencySchema = new Schema({
+	code: {type: String},
+	symbol: {type: String}
 });
 
 // Approval authority schema
@@ -173,7 +178,9 @@ const OpportunitySchema: Schema = new Schema(
 		criteria: {type: String, default: ''},
 		skills: {type: [String], default: []},
 		earn: {type: Number, default: 0},
-		fee: {type: String, default: ''},
+		fee: {type: Number, default: 0},
+		feeDisplay: {type: String, default: ''},
+		currency: {type: CurrencySchema, default: () => ({})},
 		postedAmount: {type: String, default: ''},
 		start: {type: Date, default: Date.now},
 		endDate: {type: Date, default: Date.now},

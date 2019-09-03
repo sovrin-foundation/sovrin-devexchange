@@ -18,6 +18,7 @@ export default class OpportunityEditCWUController {
 	public cities: string[];
 	public opportunityForm: IFormController;
 	public projectLink: boolean;
+	public acceptedCurrencies: any[];
 
 	private originalPublishedState: boolean;
 	private isUser: boolean;
@@ -43,6 +44,7 @@ export default class OpportunityEditCWUController {
 		// set up the dropdown amounts for CWU earnings
 		this.initDropDownAmounts();
 		this.cities = this.DataService.cities;
+		this.acceptedCurrencies = this.DataService.acceptedCurrencies;
 
 		// if the user doesn't have the right access then kick them out
 		if (this.editing && !this.isAdmin && !this.opportunity.userIs.admin) {
@@ -61,7 +63,6 @@ export default class OpportunityEditCWUController {
 			this.opportunity.project = this.projects[0];
 			this.opportunity.program = this.projects[0].program;
 		}
-
 		this.refreshOpportunity(this.opportunity);
 	}
 
@@ -229,11 +230,27 @@ export default class OpportunityEditCWUController {
 	}
 
 	public updateFeeAmount() {
-		if (this.opportunity.earn > 0) {
-			const feeAmount = 1.05;
-			this.opportunity.fee = this.$filter('currency')((this.opportunity.earn * feeAmount));
-			this.opportunity.postedAmount = this.$filter('currency')(this.opportunity.earn);
+		if (this.opportunity.currency.code === "") {
+			this.Notification.error({
+				message: "Please select a currency to associate with amount."
+			});
 		}
+		if (this.opportunity.earn === 0) {
+			this.Notification.error({
+				message: "Please select an amount greater than 0"
+			});
+		}
+		if (this.opportunity.earn > 0) {
+			const feeAmount = 1.005;
+			this.opportunity.fee = Math.round(this.opportunity.earn * feeAmount) - this.opportunity.earn;
+			this.opportunity.feeDisplay = `${this.opportunity.currency.code}${this.htmlDecode(this.opportunity.currency.symbol)} ${Math.round(this.opportunity.earn * feeAmount)}`;
+		}
+	}
+
+	public htmlDecode(htmlToDecode) {
+		var e = document.createElement('div');
+		e.innerHTML = htmlToDecode;
+		return e.childNodes[0].nodeValue;
 	}
 
 	private initDropDownAmounts() {
@@ -243,6 +260,7 @@ export default class OpportunityEditCWUController {
 			this.amounts.push(i);
 		}
 	}
+
 
 	// Refresh the view model to use the given opportunity
 	// This is mostly used after an opportunity is saved using the api and

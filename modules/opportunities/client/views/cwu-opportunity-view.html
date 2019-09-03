@@ -167,10 +167,21 @@
       <!-- // Opportunity Admin control buttons // -->
 
       <!-- PUBLISH (if opportunity is in DRAFT and COMPLETE) -->
-      <button data-automation-id="button-opportunity-publish"
+      <button data-automation-id="button-opportunity-publish" disabled="disabled"
               ng-if="vm.canPublish() && vm.canEdit && !vm.opportunity.isPublished"
               class="btn btn-primary float-right" ng-click="vm.publish(true)" title="Publish this Opportunity"><i
         class="fas fa-bullhorn"></i> Publish
+      </button>
+
+      <!-- PAY Fee if fee has not been paid -->
+      <!--      <button data-automation-id="button-opportunity-pay" class="btn btn-danger float-right">-->
+      <!--        <i class="fa fa-credit-card"></i>-->
+      <!--        Pay-->
+      <!--      </button>-->
+
+      <button class="btn btn-danger float-right" data-automation-id="button-opportunity-pay">
+        <i class="fa fa-credit-card"></i>
+        Pay
       </button>
 
       <!-- EDIT -->

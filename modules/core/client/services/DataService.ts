@@ -3,6 +3,7 @@
 import angular from 'angular';
 
 export interface IDataService {
+	acceptedCurrencies: any[];
 	cities: string[];
 }
 
@@ -117,6 +118,28 @@ angular.module('core').service('DataService', () => {
 			'West Vancouver',
 			'White Rock',
 			'Williams Lake'
+		],
+		acceptedCurrencies: [
+			{code: 'USD', symbol: '&#36;'},
+			{code: 'EUR', symbol: '&euro;'},
+			{code: 'JPY', symbol: '&#165;'},
+			{code: 'GBP', symbol: '&#163;'},
+			{code: 'AUD', symbol: '&#163;'},
+			{code: 'CAN', symbol: '&#36;'},
+			{code: 'CHF', symbol: '&nbsp;'},
+			{code: 'CNY', symbol: '&#165;'},
+			{code: 'SEK', symbol: '&#107;&#114;'},
+			{code: 'MXN', symbol: '&#36;'},
+			{code: 'NZD', symbol: '&#36;'},
+			{code: 'SGD', symbol: '&#36;'},
+			{code: 'HKD', symbol: '&#36;'},
+			{code: 'NOK', symbol: '&#107;&#114;'},
+			{code: 'KRW', symbol: '&#8361;'},
+			{code: 'TRY', symbol: '&#8378;'},
+			{code: 'INR', symbol: '&#8377;'},
+			{code: 'RUB', symbol: '&#1088;&#1091;&#1073;'},
+			{code: 'BRL', symbol: '&#82;&#36;'},
+			{code: 'ZAR', symbol: '&#82;'}
 		]
 	} as IDataService;
 });

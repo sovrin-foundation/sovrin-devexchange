@@ -1,7 +1,14 @@
 'use strict';
 
-import { UIViewScrollProvider } from '@uirouter/angularjs/lib/viewScroll';
-import angular, { ICompileProvider, idle, IHttpProvider, ILocationProvider, ILogProvider, uiNotification } from 'angular';
+import {UIViewScrollProvider} from '@uirouter/angularjs/lib/viewScroll';
+import angular, {
+	ICompileProvider,
+	idle,
+	IHttpProvider,
+	ILocationProvider,
+	ILogProvider,
+	uiNotification
+} from 'angular';
 
 export interface IApplicationConfiguration {
 	applicationEnvironment: string;

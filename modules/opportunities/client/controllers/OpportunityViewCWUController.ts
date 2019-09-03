@@ -1,15 +1,16 @@
 'use strict';
 
-import angular, { IController, ILocationService, uiNotification } from 'angular';
+import angular, {IController, ILocationService, IWindowService, uiNotification} from 'angular';
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts.js';
+
 (pdfMake as any).vfs = pdfFonts.pdfMake.vfs;
-import { StateService } from '@uirouter/core';
+import {StateService} from '@uirouter/core';
 import moment from 'moment-timezone';
-import { IProposalResource } from '../../../proposals/client/services/ProposalService';
-import { IAuthenticationService } from '../../../users/client/services/AuthenticationService';
-import { IOpportunitiesCommonService } from '../services/OpportunitiesCommonService';
-import { IOpportunitiesService, IOpportunityResource } from '../services/OpportunitiesService';
+import {IProposalResource} from '../../../proposals/client/services/ProposalService';
+import {IAuthenticationService} from '../../../users/client/services/AuthenticationService';
+import {IOpportunitiesCommonService} from '../services/OpportunitiesCommonService';
+import {IOpportunitiesService, IOpportunityResource} from '../services/OpportunitiesService';
 
 export default class OpportunityViewCWUController implements IController {
 	public static $inject = ['$state', '$location', 'opportunity', 'AuthenticationService', 'OpportunitiesService', 'Notification', 'ask', 'myproposal', 'OpportunitiesCommonService'];
@@ -28,6 +29,7 @@ export default class OpportunityViewCWUController implements IController {
 	public deadline: string;
 	public assignment: string;
 	public start: string;
+	public stripe;
 
 	private approvalAction: string;
 	private approvalType: string;
@@ -51,6 +53,62 @@ export default class OpportunityViewCWUController implements IController {
 		this.hasEmail = this.isUser && this.AuthenticationService.user.email !== '';
 
 		this.refreshOpportunity(this.opportunity);
+	}
+
+	$onInit(): void {
+
+		jQuery(document).ready(() => {
+			// @ts-ignore
+			this.stripe = Stripe('pk_test_w38olW3fCUFkax31qQR3Rypf00HgEgocyf');
+			let paymentRequest = this.stripe.paymentRequest({
+				country: 'US',
+				currency: 'usd',
+				total: {
+					label: 'Demo totals',
+					amount: 1000,
+				},
+				requestPayerName: true,
+				requestPayerEmail: true,
+			});
+			var elements = this.stripe.elements();
+			var prButton = elements.create('paymentRequestButton', {
+				paymentRequest: paymentRequest,
+			});
+
+// Check the availability of the Payment Request API first.
+			paymentRequest.canMakePayment().then(function (result) {
+				console.log(result);
+				if (result) {
+					prButton.mount('#payment-request-button');
+				} else {
+					document.getElementById('payment-request-button').style.display = 'none';
+				}
+			});
+
+			paymentRequest.on('token', function (ev) {
+				// Send the token to your server to charge it!
+				fetch('/charges', {
+					method: 'POST',
+					body: JSON.stringify({token: ev.token.id}),
+					headers: {'content-type': 'application/json'},
+				})
+					.then(function (response) {
+						if (response.ok) {
+							// Report to the browser that the payment was successful, prompting
+							// it to close the browser payment interface.
+							ev.complete('success');
+						} else {
+							// Report to the browser that the payment failed, prompting it to
+							// re-show the payment interface, or show an error message and close
+							// the payment interface.
+							ev.complete('fail');
+						}
+					});
+			});
+			console.log("fired");
+			console.log(this.stripe);
+		});
+
 	}
 
 	public async requestApprovalCode(): Promise<void> {
@@ -142,7 +200,7 @@ export default class OpportunityViewCWUController implements IController {
 		if (isToBeSaved) {
 			this.opportunity.isPublished = isToBePublished;
 			try {
-				const updatedOpportunity = await publishMethod({ opportunityId: this.opportunity._id }).$promise;
+				const updatedOpportunity = await publishMethod({opportunityId: this.opportunity._id}).$promise;
 				this.refreshOpportunity(updatedOpportunity);
 				this.Notification.success({
 					message: '<i class="fas fa-check-circle"></i> ' + publishSuccess

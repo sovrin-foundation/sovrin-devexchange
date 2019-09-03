@@ -4,7 +4,6 @@ import {IProgram} from '../../programs/shared/IProgramDTO';
 import {IProject} from '../../projects/shared/IProjectDTO';
 import {IProposal} from '../../proposals/shared/IProposalDTO';
 import {IUser} from '../../users/shared/IUserDTO';
-import {Types} from 'mongoose';
 
 export interface IPhase {
 	isImplementation?: boolean;
@@ -74,6 +73,11 @@ export interface IContract {
 	impactNotApproved: string;
 }
 
+export interface IAcceptedCurrency {
+	code: string;
+	symbol: string;
+}
+
 export interface IOpportunity {
 	_id: string;
 	code: string;
@@ -124,7 +128,9 @@ export interface IOpportunity {
 	criteria: string;
 	skills: string[];
 	earn?: number;
-	fee?: string,
+	fee?: number,
+	feeDisplay?: string,
+	currency: IAcceptedCurrency,
 	postedAmount?: string,
 	start: Date;
 	endDate: Date;
