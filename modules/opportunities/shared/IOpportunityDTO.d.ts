@@ -140,4 +140,5 @@ export interface IOpportunity {
 	userIs?: any;
 	skilllist?: string;
 	isWatching?: boolean;
+	paymentToken?: any;
 }

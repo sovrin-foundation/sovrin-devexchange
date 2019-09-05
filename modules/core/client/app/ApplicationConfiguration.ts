@@ -67,6 +67,7 @@ class ApplicationConfiguration implements IApplicationConfiguration {
 		angular.module(this.applicationModuleName).requires.push(moduleName);
 	}
 
+	// @ts-ignore
 	private bootstrapConfig(
 		$compileProvider: ICompileProvider,
 		$locationProvider: ILocationProvider,

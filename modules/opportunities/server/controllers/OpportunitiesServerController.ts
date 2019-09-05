@@ -1,11 +1,11 @@
 'use strict';
 
-import { NextFunction, Request, Response } from 'express';
+import {NextFunction, Request, Response} from 'express';
 import fs from 'fs';
 import JSZip from 'jszip';
 import _ from 'lodash';
 import moment from 'moment-timezone';
-import { Types } from 'mongoose';
+import {Types} from 'mongoose';
 import MongooseController from '../../../../config/lib/MongooseController';
 import Nexmo from 'nexmo';
 import CoreGithubController from '../../../core/server/controllers/CoreGithubController';
@@ -13,9 +13,9 @@ import CoreServerErrors from '../../../core/server/controllers/CoreServerErrors'
 import CoreServerHelpers from '../../../core/server/controllers/CoreServerHelpers';
 import MessagesServerController from '../../../messages/server/controllers/MessagesServerController';
 import ProposalsServerController from '../../../proposals/server/controllers/ProposalsServerController';
-import { IAttachmentModel, ProposalModel } from '../../../proposals/server/models/ProposalModel';
-import { IUserModel, UserModel } from '../../../users/server/models/UserModel';
-import { IOpportunityModel, OpportunityModel } from '../models/OpportunityModel';
+import {IAttachmentModel, ProposalModel} from '../../../proposals/server/models/ProposalModel';
+import {IUserModel, UserModel} from '../../../users/server/models/UserModel';
+import {IOpportunityModel, OpportunityModel} from '../models/OpportunityModel';
 import OpportunitiesUtilities from '../utilities/OpportunitiesUtilities';
 
 class OpportunitiesServerController {
@@ -27,12 +27,13 @@ class OpportunitiesServerController {
 
 	private sendMessages = MessagesServerController.sendMessages;
 
-	private constructor() {}
+	private constructor() {
+	}
 
 	// Return a list of all opportunity members. this means all members NOT
 	// including users who have requested access and are currently waiting
 	public members = (opportunity, cb) => {
-		UserModel.find({ roles: this.memberRole(opportunity) })
+		UserModel.find({roles: this.memberRole(opportunity)})
 			.select('isDisplayEmail username displayName updated created roles government profileImageURL email lastName firstName userTitle')
 			.exec(cb);
 	};
@@ -42,16 +43,16 @@ class OpportunitiesServerController {
 	public requests = (opportunity, cb) => {
 		MongooseController.mongoose
 			.model('User')
-			.find({ roles: this.requestRole(opportunity) })
+			.find({roles: this.requestRole(opportunity)})
 			.select('isDisplayEmail username displayName updated created roles government profileImageURL email lastName firstName userTitle')
 			.exec(cb);
 	};
 
 	// Takes the already queried object and pass it back
 	public read = (req, res) => {
-		
+
 		// Ensure that the opportunity is only viewable when published or when the user is either the admin for the opportunity or a root admin
-		if (req.opportunity.isPublished || req.user && (req.user.roles.indexOf(this.adminRole(req.opportunity)) !== -1 || req.user.roles.indexOf('admin') !== -1)){
+		if (req.opportunity.isPublished || req.user && (req.user.roles.indexOf(this.adminRole(req.opportunity)) !== -1 || req.user.roles.indexOf('admin') !== -1)) {
 			res.json(OpportunitiesUtilities.decorate(req.opportunity, req.user ? req.user.roles : []));
 			this.incrementViews(req.opportunity._id);
 		} else {
@@ -112,7 +113,7 @@ class OpportunitiesServerController {
 		this.setPhases(newOppInfo);
 
 		// find, update, and return the updated document in the response
-		OpportunityModel.findOneAndUpdate({ code: req.opportunity.code }, newOppInfo, { new: true }, (err, updatedOpp) => {
+		OpportunityModel.findOneAndUpdate({code: req.opportunity.code}, newOppInfo, {new: true}, (err, updatedOpp) => {
 			if (err) {
 				res.status(500).send({
 					message: CoreServerErrors.getErrorMessage(err)
@@ -274,7 +275,7 @@ class OpportunitiesServerController {
 
 	// Assign the passed in swu proposal
 	public assignswu = async (req: Request, res: Response): Promise<void> => {
-		
+
 		const opportunity = req.opportunity;
 		const proposal = req.proposal;
 		const user = req.user;
@@ -327,7 +328,7 @@ class OpportunitiesServerController {
 			res.json(decoratedOpportunity);
 
 			return;
-		}catch(error){
+		} catch (error) {
 			res.status(422).send({
 				message: CoreServerErrors.getErrorMessage(error)
 			});
@@ -336,7 +337,7 @@ class OpportunitiesServerController {
 
 	// REST operation for getting opportunities associated with a program
 	public forProgram = async (req: Request, res: Response): Promise<void> => {
-		const query = this.searchTerm(req, { program: req.program._id });
+		const query = this.searchTerm(req, {program: req.program._id});
 		try {
 			const oppList = await OpportunitiesUtilities.getOpportunityList(query, req.user);
 			res.json(oppList);
@@ -353,18 +354,18 @@ class OpportunitiesServerController {
 	public addWatch = (req, res) => {
 		req.opportunity.watchers.addToSet(req.user._id);
 		req.opportunity.save();
-		res.json({ ok: true });
+		res.json({ok: true});
 	};
 
 	public removeWatch = (req, res) => {
 		req.opportunity.watchers.pull(req.user._id);
 		req.opportunity.save();
-		res.json({ ok: true });
+		res.json({ok: true});
 	};
 
 	public deadlineStatus = (req, res) => {
 		const deadlineStatus = new Date(req.opportunity.deadline).getTime() - new Date().getTime() <= 0 ? 'CLOSED' : 'OPEN';
-		res.json({ deadlineStatus });
+		res.json({deadlineStatus});
 	};
 
 	// Populates the opportunity on the request
@@ -372,7 +373,7 @@ class OpportunitiesServerController {
 		// determine whether we are querying by code or by mongoose id
 		let query: any;
 		if (id.substr(0, 3) === 'opp') {
-			query = { code: id };
+			query = {code: id};
 		} else {
 			if (!Types.ObjectId.isValid(id)) {
 				res.status(400).send({
@@ -380,7 +381,7 @@ class OpportunitiesServerController {
 				});
 				return;
 			} else {
-				query = { _id: id };
+				query = {_id: id};
 			}
 		}
 
@@ -431,7 +432,7 @@ class OpportunitiesServerController {
 			if (action === 'approve') {
 				approvalInfo.action = 'approved';
 				notification = isPreApproval ? 'opportunity-approval-request' : 'opportunity-approved-notification';
-				whoToNotifyWhenDone = isPreApproval ? { email: opportunity.finalApproval.email } : opportunity.finalApproval.requestor;
+				whoToNotifyWhenDone = isPreApproval ? {email: opportunity.finalApproval.email} : opportunity.finalApproval.requestor;
 				if (!isPreApproval) {
 					opportunity.isApproved = true;
 					opportunity.finalApproval.routeCode = new Date().valueOf().toString();
@@ -452,7 +453,7 @@ class OpportunitiesServerController {
 			const updatedOpportunity = await this.updateSave(opportunity);
 
 			// notify the requestor if final, or the final if pre-approval
-			this.sendMessages(notification, [whoToNotifyWhenDone], { opportunity: this.setMessageData(updatedOpportunity) });
+			this.sendMessages(notification, [whoToNotifyWhenDone], {opportunity: this.setMessageData(updatedOpportunity)});
 			res.json(updatedOpportunity);
 			return;
 		} else {
@@ -558,7 +559,10 @@ class OpportunitiesServerController {
 
 		// Get all submitted and assigned proposals
 		try {
-			const proposals = await ProposalModel.find({ opportunity: req.opportunity._id, status: { $in: ['Submitted', 'Assigned'] } })
+			const proposals = await ProposalModel.find({
+				opportunity: req.opportunity._id,
+				status: {$in: ['Submitted', 'Assigned']}
+			})
 				.sort('status created')
 				.populate('user')
 				.populate('opportunity', 'opportunityTypeCd name code')
@@ -610,7 +614,7 @@ class OpportunitiesServerController {
 			res.setHeader('Content-Transfer-Encoding', 'binary');
 			res.setHeader('Content-Disposition', 'attachment; inline=false; filename="' + opportunityName + '.zip' + '"');
 
-			zip.generateNodeStream({ compression: 'DEFLATE', streamFiles: true }).pipe(res);
+			zip.generateNodeStream({compression: 'DEFLATE', streamFiles: true}).pipe(res);
 			return;
 		} catch (error) {
 			res.status(422).send({
@@ -629,7 +633,7 @@ class OpportunitiesServerController {
 		zip.folder(opportunityName);
 
 		try {
-			const proposal = await ProposalModel.findOne({ user: req.user._id, opportunity: req.opportunity._id })
+			const proposal = await ProposalModel.findOne({user: req.user._id, opportunity: req.opportunity._id})
 				.populate('createdBy', 'displayName')
 				.populate('updatedBy', 'displayName')
 				.populate('opportunity')
@@ -731,7 +735,7 @@ class OpportunitiesServerController {
 			res.setHeader('Content-Transfer-Encoding', 'binary');
 			res.setHeader('Content-Disposition', 'attachment; inline=false; filename="' + opportunityName + '.zip' + '"');
 
-			zip.generateNodeStream({ compression: 'DEFLATE', streamFiles: true }).pipe(res);
+			zip.generateNodeStream({compression: 'DEFLATE', streamFiles: true}).pipe(res);
 			return;
 		} catch (error) {
 			res.status(422).send({
@@ -739,6 +743,30 @@ class OpportunitiesServerController {
 			});
 			return;
 		}
+	};
+
+	public fee = async (req: Request, res: Response): Promise<any> => {
+		try {
+			const opportunity = req.body;
+			console.log(opportunity);
+			const stripe = require("stripe")("sk_test_GyK6ppgNghkynjeuh8nBWrEU00WjT4l4hA");
+			stripe.charges.create({
+				amount: opportunity.fee,
+				currency: opportunity.currency.code,
+				source: opportunity.paymentToken.token.id
+			}, function (err, charge) {
+				if (err) {
+					res.statusCode = 403;
+					res.json = err.message;
+					return res.send(res.statusMessage);
+				}
+				res.json(charge);
+				return;
+			});
+		} catch (e) {
+			res.status(401).json(e.message);
+		}
+
 	};
 
 	// Returns an aggregate cursor that counts proposals on an opportunity and groups by their status
@@ -752,7 +780,7 @@ class OpportunitiesServerController {
 			{
 				$group: {
 					_id: '$status',
-					count: { $sum: 1 }
+					count: {$sum: 1}
 				}
 			}
 		])
@@ -768,7 +796,7 @@ class OpportunitiesServerController {
 			opportunity = await this.populateOpportunity(opportunity);
 
 			// send intermediate approval request
-			this.sendMessages('opportunity-pre-approval-request', [{ email: opportunity.intermediateApproval.email }], { opportunity: this.setMessageData(opportunity) });
+			this.sendMessages('opportunity-pre-approval-request', [{email: opportunity.intermediateApproval.email}], {opportunity: this.setMessageData(opportunity)});
 			opportunity.intermediateApproval.state = 'sent';
 			opportunity.intermediateApproval.twoFASendCount = 0;
 			opportunity.intermediateApproval.twoFAAttemptCount = 0;
@@ -799,7 +827,7 @@ class OpportunitiesServerController {
 	// Send a 2FA token via email using the passed approval info
 	//
 	private send2FAviaEmail = approvalInfo => {
-		this.sendMessages('opportunity-approval-2FA', [{ email: approvalInfo.email }], {
+		this.sendMessages('opportunity-approval-2FA', [{email: approvalInfo.email}], {
 			approvalInfo
 		});
 	};
@@ -835,13 +863,13 @@ class OpportunitiesServerController {
 		opts = opts || {};
 		const me = CoreServerHelpers.summarizeRoles(req.user && req.user.roles ? req.user.roles : null);
 		if (!me.isAdmin) {
-			opts.$or = [{ isPublished: true }, { code: { $in: me.opportunities.admin } }];
+			opts.$or = [{isPublished: true}, {code: {$in: me.opportunities.admin}}];
 		}
 		return opts;
 	};
 
 	private incrementViews = id => {
-		OpportunityModel.updateOne({ _id: id }, { $inc: { views: 1 } }).exec();
+		OpportunityModel.updateOne({_id: id}, {$inc: {views: 1}}).exec();
 	};
 
 	// Set all the info we need for notification merging
@@ -950,7 +978,10 @@ class OpportunitiesServerController {
 
 	// Get a list of all users who are listening to the add opp event
 	private async getSubscribedUsers(): Promise<IUserModel[]> {
-		return await UserModel.find({ notifyOpportunities: true, email: { $ne: null } }, '_id email firstName lastName displayName').exec();
+		return await UserModel.find({
+			notifyOpportunities: true,
+			email: {$ne: null}
+		}, '_id email firstName lastName displayName').exec();
 	}
 
 	// Save the given opportunity and returns the updated version
@@ -1096,7 +1127,7 @@ The opportunity closes on <b>${deadline}</b>.</p>
 			zip.folder(opportunityName)
 				.folder(proponentName)
 				.folder('docs')
-				.file(file.name, fs.readFileSync(file.path), { binary: true });
+				.file(file.name, fs.readFileSync(file.path), {binary: true});
 		});
 	}
 

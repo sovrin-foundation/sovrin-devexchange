@@ -93,6 +93,10 @@ class OpportunitiesRouter {
 			.all(OpportunitiesPolicy.isAllowed)
 			.post(OpportunitiesServerController.action);
 
+		app.route('/api/opportunities/:opportunityId/fee')
+			.all(OpportunitiesPolicy.isAllowed)
+			.post(OpportunitiesServerController.fee);
+
 		// Finish by binding the Opportunity middleware
 		app.param('opportunityId', OpportunitiesServerController.opportunityByID);
 	};

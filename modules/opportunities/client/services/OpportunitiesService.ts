@@ -1,7 +1,9 @@
 'use strict';
 
-import angular, { IPromise, resource } from 'angular';
-import { IOpportunity } from '../../shared/IOpportunityDTO';
+import angular, {IPromise, resource} from 'angular';
+import {IOpportunity} from '../../shared/IOpportunityDTO';
+import {promise} from "selenium-webdriver";
+import {IOpportunityModel} from "../../server/models/OpportunityModel";
 
 interface IOpportunityServiceParams {
 	opportunityId?: string;
@@ -22,18 +24,32 @@ export interface IOpportunityResource extends resource.IResource<IOpportunity>, 
 
 export interface IOpportunitiesService extends resource.IResourceClass<IOpportunityResource> {
 	create(opportunity: IOpportunityResource): IOpportunityResource;
+
 	update(opportunity: IOpportunityResource): IOpportunityResource;
+
 	publish(params: IOpportunityServiceParams): IOpportunityResource;
+
 	unpublish(params: IOpportunityServiceParams): IOpportunityResource;
+
 	assign(params: IOpportunityServiceParams): IOpportunityResource;
+
 	assignswu(params: IOpportunityServiceParams): IOpportunityResource;
+
 	unassign(params: IOpportunityServiceParams): IOpportunityResource;
+
 	addWatch(params: IOpportunityServiceParams): IOpportunityResource;
+
 	removeWatch(params: IOpportunityServiceParams): IOpportunityResource;
+
 	getDeadlineStatus(params: IOpportunityServiceParams): IDeadlineResource;
+
 	getProposalStats(params: IOpportunityServiceParams): object;
+
 	requestCode(params: IOpportunityServiceParams): IOpportunityResource;
+
 	submitCode(params: IOpportunityServiceParams): IOpportunityResource;
+
+	pay(opportunity: IOpportunity): Promise<any>;
 }
 
 angular.module('opportunities.services').factory('OpportunitiesService', [
@@ -66,43 +82,43 @@ angular.module('opportunities.services').factory('OpportunitiesService', [
 		const publishAction: resource.IActionDescriptor = {
 			method: 'PUT',
 			url: '/api/opportunities/:opportunityId/publish',
-			params: { opportunityId: '@opportunityId' }
+			params: {opportunityId: '@opportunityId'}
 		};
 
 		const unpublishAction: resource.IActionDescriptor = {
 			method: 'PUT',
 			url: '/api/opportunities/:opportunityId/unpublish',
-			params: { opportunityId: '@opportunityId' }
+			params: {opportunityId: '@opportunityId'}
 		};
 
 		const assignAction: resource.IActionDescriptor = {
 			method: 'PUT',
 			url: '/api/opportunities/:opportunityId/assign/:proposalId',
-			params: { opportunityId: '@opportunityId', proposalId: '@proposalId' }
+			params: {opportunityId: '@opportunityId', proposalId: '@proposalId'}
 		};
 
 		const assignSWUAction: resource.IActionDescriptor = {
 			method: 'PUT',
 			url: '/api/opportunities/:opportunityId/assignswu/:proposalId',
-			params: { opportunityId: '@opportunityId', proposalId: '@proposalId' }
+			params: {opportunityId: '@opportunityId', proposalId: '@proposalId'}
 		};
 
 		const unassignAction: resource.IActionDescriptor = {
 			method: 'PUT',
 			url: '/api/opportunities/:opportunityId/unassign/:proposalId',
-			params: { opportunityId: '@opportunityId', proposalId: '@proposalId' }
+			params: {opportunityId: '@opportunityId', proposalId: '@proposalId'}
 		};
 
 		const addWatchAction: resource.IActionDescriptor = {
 			method: 'PUT',
 			url: '/api/opportunities/:opportunityId/watch/add',
-			params: { opportunityId: '@opportunityId' }
+			params: {opportunityId: '@opportunityId'}
 		};
 
 		const removeWatchAction: resource.IActionDescriptor = {
 			method: 'PUT',
 			url: '/api/opportunities/:opportunityId/watch/remove',
-			params: { opportunityId: '@opportunityId' }
+			params: {opportunityId: '@opportunityId'}
 		};
 
 		const getDeadlineStatusAction: resource.IActionDescriptor = {
@@ -118,13 +134,19 @@ angular.module('opportunities.services').factory('OpportunitiesService', [
 		const requestCodeAction: resource.IActionDescriptor = {
 			method: 'PUT',
 			url: '/api/opportunities/:opportunityId/sendcode',
-			params: { opportunityId: '@opportunityId' }
+			params: {opportunityId: '@opportunityId'}
 		};
 
 		const submitCodeAction: resource.IActionDescriptor = {
 			method: 'POST',
 			url: '/api/opportunities/:opportunityId/action',
-			params: { opportunityId: '@opportunityId' }
+			params: {opportunityId: '@opportunityId'}
+		};
+
+		const payAction: resource.IActionDescriptor = {
+			method: 'POST',
+			url: '/api/opportunities/:opportunityId/fee',
+			params: {opportunityId: '@_id'}
 		};
 
 		return $resource(
@@ -145,7 +167,8 @@ angular.module('opportunities.services').factory('OpportunitiesService', [
 				getDeadlineStatus: getDeadlineStatusAction,
 				getProposalStats: getProposalStatsAction,
 				requestCode: requestCodeAction,
-				submitCode: submitCodeAction
+				submitCode: submitCodeAction,
+				pay: payAction
 			}
 		) as IOpportunitiesService;
 	}

@@ -111,6 +111,10 @@ class OpportunitiesPolicy {
 					{
 						resources: '/api/opportunities/:opportunityId/myProposalArchive',
 						permissions: ['get']
+					},
+					{
+						resources: '/api/opportunities/:opportunityId/fee',
+						permissions: ['post']
 					}
 				]
 			},

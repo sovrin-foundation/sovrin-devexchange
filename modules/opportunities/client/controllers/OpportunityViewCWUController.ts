@@ -1,6 +1,6 @@
 'use strict';
 
-import angular, {IController, ILocationService, IWindowService, uiNotification} from 'angular';
+import angular, {IController, ILocationService, uiNotification} from 'angular';
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts.js';
 
@@ -13,7 +13,7 @@ import {IOpportunitiesCommonService} from '../services/OpportunitiesCommonServic
 import {IOpportunitiesService, IOpportunityResource} from '../services/OpportunitiesService';
 
 export default class OpportunityViewCWUController implements IController {
-	public static $inject = ['$state', '$location', 'opportunity', 'AuthenticationService', 'OpportunitiesService', 'Notification', 'ask', 'myproposal', 'OpportunitiesCommonService'];
+	public static $inject = ['$state', '$location', '$uibModal', 'opportunity', 'AuthenticationService', 'OpportunitiesService', 'Notification', 'ask', 'myproposal', 'OpportunitiesCommonService'];
 
 	public showPreApproval: boolean;
 	public showFinalApproval: boolean;
@@ -38,6 +38,7 @@ export default class OpportunityViewCWUController implements IController {
 	constructor(
 		private $state: StateService,
 		private $location: ILocationService,
+		private $uibModal: any,
 		public opportunity: IOpportunityResource,
 		private AuthenticationService: IAuthenticationService,
 		private OpportunitiesService: IOpportunitiesService,
@@ -53,60 +54,14 @@ export default class OpportunityViewCWUController implements IController {
 		this.hasEmail = this.isUser && this.AuthenticationService.user.email !== '';
 
 		this.refreshOpportunity(this.opportunity);
+
+		const $this = this;
 	}
 
 	$onInit(): void {
 
 		jQuery(document).ready(() => {
-			// @ts-ignore
-			this.stripe = Stripe('pk_test_w38olW3fCUFkax31qQR3Rypf00HgEgocyf');
-			let paymentRequest = this.stripe.paymentRequest({
-				country: 'US',
-				currency: 'usd',
-				total: {
-					label: 'Demo totals',
-					amount: 1000,
-				},
-				requestPayerName: true,
-				requestPayerEmail: true,
-			});
-			var elements = this.stripe.elements();
-			var prButton = elements.create('paymentRequestButton', {
-				paymentRequest: paymentRequest,
-			});
 
-// Check the availability of the Payment Request API first.
-			paymentRequest.canMakePayment().then(function (result) {
-				console.log(result);
-				if (result) {
-					prButton.mount('#payment-request-button');
-				} else {
-					document.getElementById('payment-request-button').style.display = 'none';
-				}
-			});
-
-			paymentRequest.on('token', function (ev) {
-				// Send the token to your server to charge it!
-				fetch('/charges', {
-					method: 'POST',
-					body: JSON.stringify({token: ev.token.id}),
-					headers: {'content-type': 'application/json'},
-				})
-					.then(function (response) {
-						if (response.ok) {
-							// Report to the browser that the payment was successful, prompting
-							// it to close the browser payment interface.
-							ev.complete('success');
-						} else {
-							// Report to the browser that the payment failed, prompting it to
-							// re-show the payment interface, or show an error message and close
-							// the payment interface.
-							ev.complete('fail');
-						}
-					});
-			});
-			console.log("fired");
-			console.log(this.stripe);
 		});
 
 	}
@@ -340,6 +295,28 @@ export default class OpportunityViewCWUController implements IController {
 		const momentDate = moment(date);
 		const dateFormat = includeTime ? 'MMMM Do YYYY, HH:mm z' : 'MMMM Do YYYY';
 		return momentDate.tz('America/Vancouver').format(dateFormat);
+	}
+
+	// Handle Payments
+	public showPaymentModal(opportunity) {
+		const modalInstance =
+			this.$uibModal.open({
+				animation: true,
+				ariaLabelledBy: 'modal-title',
+				ariaDescribedBy: 'modal-body',
+				templateUrl: 'paymentModal.html',
+				controller: 'OpportunityPaymentCWUController',
+				controllerAs: '$mc',
+				resolve: {
+					opportunity: () => {
+						return opportunity;
+					}
+				}
+			});
+	}
+
+	public paymentApi() {
+		return `/api/opportunities/${this.opportunity.opportunityId}/fee`;
 	}
 
 	private addWatch() {
