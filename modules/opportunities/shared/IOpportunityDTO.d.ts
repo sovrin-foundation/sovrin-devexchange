@@ -78,6 +78,17 @@ export interface IAcceptedCurrency {
 	symbol: string;
 }
 
+export interface IPayment {
+	id: string,
+	amount: number,
+	paid: boolean,
+	currency: string,
+	status: string,
+	receiptEmail: string,
+	receiptUrl: string,
+	paymentSuccess: boolean
+}
+
 export interface IOpportunity {
 	_id: string;
 	code: string;
@@ -141,4 +152,5 @@ export interface IOpportunity {
 	skilllist?: string;
 	isWatching?: boolean;
 	paymentToken?: any;
+	payment: IPayment[]
 }

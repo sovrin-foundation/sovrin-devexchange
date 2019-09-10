@@ -230,14 +230,14 @@ export default class OpportunityEditCWUController {
 	}
 
 	public updateFeeAmount() {
-		if (this.opportunity.currency.code === "") {
+		if (this.opportunity.currency.code === '') {
 			this.Notification.error({
-				message: "Please select a currency to associate with amount."
+				message: 'Please select a currency to associate with amount.'
 			});
 		}
 		if (this.opportunity.earn === 0) {
 			this.Notification.error({
-				message: "Please select an amount greater than 0"
+				message: 'Please select an amount greater than 0'
 			});
 		}
 		if (this.opportunity.earn > 0) {
@@ -248,7 +248,7 @@ export default class OpportunityEditCWUController {
 	}
 
 	public htmlDecode(htmlToDecode) {
-		var e = document.createElement('div');
+		const e = document.createElement('div');
 		e.innerHTML = htmlToDecode;
 		return e.childNodes[0].nodeValue;
 	}
@@ -260,7 +260,6 @@ export default class OpportunityEditCWUController {
 			this.amounts.push(i);
 		}
 	}
-
 
 	// Refresh the view model to use the given opportunity
 	// This is mostly used after an opportunity is saved using the api and

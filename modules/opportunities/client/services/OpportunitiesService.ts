@@ -2,8 +2,6 @@
 
 import angular, {IPromise, resource} from 'angular';
 import {IOpportunity} from '../../shared/IOpportunityDTO';
-import {promise} from "selenium-webdriver";
-import {IOpportunityModel} from "../../server/models/OpportunityModel";
 
 interface IOpportunityServiceParams {
 	opportunityId?: string;
@@ -49,7 +47,7 @@ export interface IOpportunitiesService extends resource.IResourceClass<IOpportun
 
 	submitCode(params: IOpportunityServiceParams): IOpportunityResource;
 
-	pay(opportunity: IOpportunity): Promise<any>;
+	pay(opportunity: IOpportunity): IOpportunityResource;
 }
 
 angular.module('opportunities.services').factory('OpportunitiesService', [

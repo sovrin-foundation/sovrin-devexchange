@@ -167,18 +167,14 @@
       <!-- // Opportunity Admin control buttons // -->
 
       <!-- PUBLISH (if opportunity is in DRAFT and COMPLETE) -->
-      <button data-automation-id="button-opportunity-publish" disabled="disabled"
+      <button data-automation-id="button-opportunity-publish" ng-disabled="!vm.opportunityPaid"
               ng-if="vm.canPublish() && vm.canEdit && !vm.opportunity.isPublished"
               class="btn btn-primary float-right" ng-click="vm.publish(true)" title="Publish this Opportunity"><i
         class="fas fa-bullhorn"></i> Publish
       </button>
 
-      <!-- PAY Fee if fee has not been paid -->
-      <!--      <button data-automation-id="button-opportunity-pay" class="btn btn-danger float-right">-->
-      <!--        <i class="fa fa-credit-card"></i>-->
-      <!--        Pay-->
-      <!--      </button>-->
-      <button class="btn btn-danger float-right" data-automation-id="button-opportunity-pay"
+      <button ng-if="!vm.opportunityPaid" class="btn btn-danger float-right"
+              data-automation-id="button-opportunity-pay"
               ng-click="vm.showPaymentModal(vm.opportunity)">
         <i class="fa fa-credit-card"></i>
         Pay
@@ -380,16 +376,19 @@
   <div class="payment-body modal-body" id="payment-body">
     <form id="payment-form" action="/api/opportunity/{$mc.opportunity._id}/fee" method="post">
       <div class="fieldset">
-        <input id="cc-name" class="field" type="text" placeholder="Name" required="" autocomplete="name">
-        <input id="cc-email" class="field half-width" type="email" placeholder="Email" required="" autocomplete="email">
-        <input id="cc-phone" class="field half-width" type="tel" placeholder="Phone" required="" autocomplete="tel">
+        <input id="cc-name" class="field" type="text" placeholder="Name" required="" autocomplete="name"
+               ng-model="$mc.name">
+        <input id="cc-email" class="field half-width" type="email" placeholder="Email" required="" autocomplete="email"
+               ng-model="$mc.email">
+        <input id="cc-phone" class="field half-width" type="tel" placeholder="Phone" required="" autocomplete="tel"
+               ng-model="$mc.phone">
       </div>
       <div class="fieldset">
         <div id="cc-card-number" class="field empty"></div>
         <div id="cc-card-expiry" class="field empty third-width"></div>
         <div id="cc-card-cvc" class="field empty third-width"></div>
       </div>
-      <button type="submit" data-tid="elements_examples.form.pay_button">Pay $25</button>
+      <button type="submit" data-tid="elements_examples.form.pay_button">Pay {{$mc.paymentAmountDisplay}}</button>
       <div class="error" role="alert" style="display: none;">
         <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17">
           <path class="base" fill="#000"

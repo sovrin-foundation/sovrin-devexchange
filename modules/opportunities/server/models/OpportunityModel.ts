@@ -123,6 +123,16 @@ const PhasesSchema = new Schema({
 		minimize: false
 	});
 
+const PaymentSchema = new Schema({
+	id: {type: String, default: ''},
+	amount: {type: Number, default: 0},
+	paid: {type: Boolean, default: false},
+	currency: {type: String, default: 'usd'},
+	status: {type: String, default: ''},
+	receiptEmail: {type: String, default: ''},
+	receiptUrl: {type: String, default: ''}
+});
+
 // Opportunity schema
 const OpportunitySchema: Schema = new Schema(
 	{
@@ -181,6 +191,7 @@ const OpportunitySchema: Schema = new Schema(
 		fee: {type: Number, default: 0},
 		feeDisplay: {type: String, default: ''},
 		currency: {type: CurrencySchema, default: () => ({})},
+		payment: [{type: PaymentSchema, default: () => ([{}])}],
 		postedAmount: {type: String, default: ''},
 		start: {type: Date, default: Date.now},
 		endDate: {type: Date, default: Date.now},
@@ -299,6 +310,17 @@ OpportunitySchema.virtual('implementationStartDateDisplay').get(function () {
 OpportunitySchema.virtual('implementationEndDateDisplay').get(function () {
 	const dt = new Date(this.implementationEndDate);
 	return dayNames[dt.getDay()] + ', ' + monthNames[dt.getMonth()] + ' ' + dt.getDate() + ', ' + dt.getFullYear();
+});
+
+OpportunitySchema.virtual('paymentSuccess').get(function () {
+	const payments = this.payment;
+	let paymentSuccessful = false;
+	payments.forEach((value, i) => {
+		if (value.paid) {
+			paymentSuccessful = true;
+		}
+	});
+	return paymentSuccessful;
 });
 
 export const OpportunityModel: Model<IOpportunityModel> = MongooseController.mongoose.model<IOpportunityModel>('Opportunity', OpportunitySchema);

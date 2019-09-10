@@ -748,19 +748,34 @@ class OpportunitiesServerController {
 	public fee = async (req: Request, res: Response): Promise<any> => {
 		try {
 			const opportunity = req.body;
-			console.log(opportunity);
 			const stripe = require("stripe")("sk_test_GyK6ppgNghkynjeuh8nBWrEU00WjT4l4hA");
 			stripe.charges.create({
-				amount: opportunity.fee,
+				amount: opportunity.fee * 100,
 				currency: opportunity.currency.code,
-				source: opportunity.paymentToken.token.id
+				source: opportunity.paymentToken.token.id,
+				receipt_email: opportunity.paymentToken.token.email,
+				description: `Customer: ${opportunity.paymentToken.token.card.name} Project: ${opportunity.name} Amount: ${opportunity.fee}`
 			}, function (err, charge) {
 				if (err) {
-					res.statusCode = 403;
-					res.json = err.message;
-					return res.send(res.statusMessage);
+					return res.status(403).send({message: err.message});
 				}
-				res.json(charge);
+				const payment = {
+					id: charge.id,
+					amount: charge.amount,
+					paid: charge.paid,
+					currency: charge.currency,
+					status: charge.outcome.network_status,
+					receiptEmail: charge.receipt_email,
+					receiptUrl: charge.receipt_url
+				};
+
+				opportunity.payment.push(payment);
+
+				OpportunityModel.findOneAndUpdate({_id: opportunity._id}, opportunity, (err, doc) => {
+					if (err) return res.status(500).json({error: err});
+					res.json(opportunity);
+					res.send();
+				});
 				return;
 			});
 		} catch (e) {

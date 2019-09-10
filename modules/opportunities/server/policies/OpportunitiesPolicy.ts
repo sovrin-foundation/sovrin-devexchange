@@ -114,7 +114,7 @@ class OpportunitiesPolicy {
 					},
 					{
 						resources: '/api/opportunities/:opportunityId/fee',
-						permissions: ['post']
+						permissions: ['*']
 					}
 				]
 			},

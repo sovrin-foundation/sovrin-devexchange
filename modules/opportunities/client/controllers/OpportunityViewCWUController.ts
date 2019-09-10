@@ -3,8 +3,8 @@
 import angular, {IController, ILocationService, uiNotification} from 'angular';
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts.js';
-
 (pdfMake as any).vfs = pdfFonts.pdfMake.vfs;
+
 import {StateService} from '@uirouter/core';
 import moment from 'moment-timezone';
 import {IProposalResource} from '../../../proposals/client/services/ProposalService';
@@ -30,6 +30,7 @@ export default class OpportunityViewCWUController implements IController {
 	public assignment: string;
 	public start: string;
 	public stripe;
+	public opportunityPaid = false;
 
 	private approvalAction: string;
 	private approvalType: string;
@@ -54,16 +55,10 @@ export default class OpportunityViewCWUController implements IController {
 		this.hasEmail = this.isUser && this.AuthenticationService.user.email !== '';
 
 		this.refreshOpportunity(this.opportunity);
-
-		const $this = this;
 	}
 
-	$onInit(): void {
-
-		jQuery(document).ready(() => {
-
-		});
-
+	public $onInit(): void {
+		this.paid();
 	}
 
 	public async requestApprovalCode(): Promise<void> {
@@ -164,6 +159,16 @@ export default class OpportunityViewCWUController implements IController {
 				this.opportunity.isPublished = publishedState;
 				this.handleError(error);
 			}
+		}
+	}
+
+	public paid(): void {
+		if (this.opportunity.payment.length > 0) {
+			this.opportunity.payment.forEach((value, index) => {
+				if (value.paid) {
+					this.opportunityPaid = true;
+				}
+			});
 		}
 	}
 
@@ -313,10 +318,19 @@ export default class OpportunityViewCWUController implements IController {
 					}
 				}
 			});
-	}
 
-	public paymentApi() {
-		return `/api/opportunities/${this.opportunity.opportunityId}/fee`;
+		modalInstance.result.then((result) => {
+			this.opportunity.payment = result.payment;
+			if (result.$promise.$$state.status !== 403) {
+				this.Notification.success('Payment Accepted');
+				this.opportunity.payment = result.payment;
+				this.paid();
+				this.refreshOpportunity(this.opportunity);
+				setTimeout(() => {
+					window.location.reload();
+				}, 2000);
+			}
+		});
 	}
 
 	private addWatch() {
@@ -382,6 +396,7 @@ export default class OpportunityViewCWUController implements IController {
 			message: `<i class="fas fa-exclamation-triangle"></i> ${errorMessage}`
 		});
 	}
+
 }
 
 angular.module('opportunities').controller('OpportunityViewCWUController', OpportunityViewCWUController);
