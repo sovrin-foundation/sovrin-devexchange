@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<md:EntityDescriptor entityID="https://vci.idhouse" ID="_57c49b20-737b-408f-8190-0b8b53471b63" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata">
+  <md:IDPSSODescriptor ID="_dd44807d-2d25-4d58-9ae5-8527cb813b02" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+    <md:KeyDescriptor>
+      <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+        <X509Data>
+          <X509Certificate>MIIDLzCCAhegAwIBAgIQora+zDWbXKtG8OF49GvJRjANBgkqhkiG9w0BAQsFADAsMSowKAYDVQQDEyFJZFJhbXAgUm9vdCBDZXJ0aWZpY2F0ZSBBdXRob3JpdHkwIBcNMTgxMDEyMTgxMTAwWhgPMjA3NTAxMDEwNTAwMDBaMBYxFDASBgNVBAMTC3ZjaS5pZGhvdXNlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmcUQxEcSIZ1w4s1Q+ZOUhXZFC+QFarAUQ1y7hywmaGegavd2Rw+thxsRHO/ENAEG9YDgmHiCn/1nbZcFA5Tj9zPffcOIuQnNeWUz4/5GZr+MlQJdh+CZcLHsls4kks+T2l8GgT3s4pXPM5UvPNJS7iRzu890/ywqGBTrobrLs17VVVw5x6QtCOy6g7IoY23LIJhDLuVgkcCpoYgMdIwYE4Bbpset/TvvUpOc1859TCzcFz77EDZUHW2fAYytnmnXwpwLktC8yq4rvcVDctZL0XFd1yA5fW2iJeDN2v9lt6bGnpX4GOqXXnSMhbiLhsNSTn6mwcDjLlbdvpRUgwTARQIDAQABo2EwXzBdBgNVHQEEVjBUgBDkk0wsecwuyHxWLUWA+eseoS4wLDEqMCgGA1UEAxMhSWRSYW1wIFJvb3QgQ2VydGlmaWNhdGUgQXV0aG9yaXR5ghBgc2CKB3den0YfkdHVkoXNMA0GCSqGSIb3DQEBCwUAA4IBAQA8A5CRGQMIGP28EpnJCFpLBTfDCG58xTEvHANn3rWmGGKGX+QT4on3zTvtebedM4w5EZemBp9VqCO9mpzufERE+DCoQOI/6qVW/p4Fl0iS3AejHRsW65TFf0MjSAmA5vkqUu6Q7tTasdefz9sHiegfVWEzwrI8EYl4cWlfNeSmQq5zmzjyTod5iQRU8/FoDd2ODkdAcz7ZagW9g73GWGD6ypek+K0HMlQC7FNF19sNJU9/m2EwOD56jzB+FExdyhPvHSHsIk+3GOv6v0jrlnTeLRszg/B+Egrg7BjTePQnymLDd9TmW5SVFOih6k7ht6CMFuerxXi3s6nL2xBpAErQ</X509Certificate>
+        </X509Data>
+      </KeyInfo>
+    </md:KeyDescriptor>
+    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://passport.idramp.com/SAML/SLOService" />
+    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://passport.idramp.com/SAML/SLOService" />
+    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://passport.idramp.com/SAML/SSOService" />
+    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://passport.idramp.com/SAML/SSOService" />
+  </md:IDPSSODescriptor>
+</md:EntityDescriptor>

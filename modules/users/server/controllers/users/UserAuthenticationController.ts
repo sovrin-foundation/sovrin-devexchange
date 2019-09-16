@@ -1,10 +1,12 @@
 'use strict';
 
-import { NextFunction, Request, Response } from 'express';
+import {NextFunction, Request, response, Response} from 'express';
 import passport from 'passport';
 import CoreServerErrors from '../../../../core/server/controllers/CoreServerErrors';
 import MessagesServerController from '../../../../messages/server/controllers/MessagesServerController';
-import { IUserModel, UserModel } from '../../models/UserModel';
+import {IUserModel, UserModel} from '../../models/UserModel';
+import * as fs from "fs";
+import * as samlify from 'samlify';
 
 class UserAuthenticationController {
 	public static getInstance() {
@@ -17,6 +19,23 @@ class UserAuthenticationController {
 
 	// URLs for which user can't be redirected on signin
 	private noReturnUrls = ['/authentication/signin', '/authentication/signup'];
+
+	private saml = require('samlify');
+
+	private ServiceProvider = this.saml.ServiceProvider;
+	private IdentityProvider = this.saml.IdentityProvider;
+
+	private sp = this.ServiceProvider({
+		privateKey: fs.readFileSync('./config/saml/security/private_key.pem'),
+		privateKeyPass: '',
+		metadata: fs.readFileSync('./config/saml/config/sp.xml')
+	});
+	private idp = this.IdentityProvider({
+		isAssertionEncrypted: false,
+		requestSignatureAlgorithm: 'http://www.w3.org/2000/09/xmldsig#rsa-sha1',
+		wantAuthnRequestsSigned: true,
+		metadata: fs.readFileSync('./config/saml/config/idp.xml')
+	});
 
 	private constructor() {
 		this.signin = this.signin.bind(this);
@@ -250,7 +269,7 @@ class UserAuthenticationController {
 							});
 						} else {
 							// send message to requesting user letting them know request has been approved
-							this.sendMessages(responseType, [requestingUser.id], { requestingUser });
+							this.sendMessages(responseType, [requestingUser.id], {requestingUser});
 							return res.status(200).send({
 								message: notificationMessage
 							});
@@ -260,18 +279,53 @@ class UserAuthenticationController {
 			});
 		}
 	};
+
 	/**
-	 * SAML Provider Call
+	 * SAML IdentityProvider Call
 	 */
-	public samlCall = (strategy, scope) => {
-		return (req, res, next) => {
-			passport.authenticate(strategy, { failureRedirect: '/', failureFlash: true })(req, res, next);
-		};
+	public samlAuth = (req, res) => {
+		try {
+			const url = this.sp.createLoginRequest(this.idp, 'redirect');
+			return res.redirect(url.context);
+		} catch (e) {
+			console.log(e);
+		}
+
 	};
 
-	public samlResponse = (all) => {
-		// tslint:disable-next-line:no-console
-		console.log(all);
+	public samlResponse = (req, res) => {
+		const cookieParser = require('cookie-parser');
+		const cookiee = require('cookie-encryption');
+
+		const COOKIE_CODE = 'w450n84bn09ba0w3ba300730a93nv3070ba5qqvbv07';
+		const cookieHoursMaxAge = 12;
+
+		var cookieVault = cookiee(COOKIE_CODE, {
+			cipher: 'aes-256-cbc',
+			encoding: 'base64',
+			cookie: 'ssohist',
+			maxAge: cookieHoursMaxAge * 60 * 60 * 1000,
+			httpOnly: true
+		});
+
+		samlify.setSchemaValidator({
+			validate: (response: string) => {
+				/* implment your own or always returns a resolved promise to skip */
+				return Promise.resolve('SKIPPED');
+			}
+		});
+
+		this.sp.parseLoginResponse(this.idp, 'post', req)
+			.then(parseResult => {
+				if (parseResult.extract.attributes.email) {
+					cookieVault.write(req, COOKIE_CODE);
+					res.redirect('/');
+				} else {
+					res.json("message", "error");
+				}
+			}).catch(e => {
+			console.error(e);
+		});
 	};
 
 	private handleLoginResponse(res: Response, user: IUserModel) {

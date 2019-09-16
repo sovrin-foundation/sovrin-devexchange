@@ -3,8 +3,8 @@
 import UserAuthenticationController from '../controllers/users/UserAuthenticationController';
 import UserPasswordController from '../controllers/users/UserPasswordController';
 import AuthPolicy from '../policies/AuthPolicy';
-import { any } from 'async';
-import { response } from 'express';
+import {any} from 'async';
+import {request, response} from 'express';
 
 class AuthRouter {
 	public static getInstance() {
@@ -55,11 +55,14 @@ class AuthRouter {
 
 		app.route('/api/auth/saml')
 			.all(AuthPolicy.isAllowed)
-			.get(UserAuthenticationController.samlCall('saml', {}));
+			.get(UserAuthenticationController.samlAuth);
 
 		app.route('/api/auth/saml/consume')
 			.all(AuthPolicy.isAllowed)
 			.post(UserAuthenticationController.samlResponse);
+		app.route('/api/auth/saml/consume')
+			.all(AuthPolicy.isAllowed)
+			.get(UserAuthenticationController.samlResponse);
 		app.route('/saml')
 			.all(AuthPolicy.isAllowed);
 	};

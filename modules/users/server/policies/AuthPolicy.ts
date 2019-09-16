@@ -45,6 +45,14 @@ class AuthPolicy {
 					{
 						resources: '/api/auth/reset/:token',
 						permissions: ['get', 'post']
+					},
+					{
+						resources: '/api/auth/saml',
+						permissions: 'get'
+					},
+					{
+						resources: '/api/auth/saml/consume',
+						permissions: ['get', 'post']
 					}
 				]
 			}
