@@ -52,7 +52,11 @@ class AuthPolicy {
 					},
 					{
 						resources: '/api/auth/saml/consume',
-						permissions: ['get', 'post']
+						permissions: 'post'
+					},
+					{
+						resources: '/api/auth/saml/signin',
+						permissions: 'post'
 					}
 				]
 			}

@@ -1,7 +1,7 @@
 'use strict';
 
-import angular, { IPromise, resource } from 'angular';
-import { IUser } from '../../shared/IUserDTO';
+import angular, {IPromise, resource} from 'angular';
+import {IUser} from '../../shared/IUserDTO';
 
 interface IUserServiceParams {
 	token?: string;
@@ -19,15 +19,26 @@ export interface IUserResource extends resource.IResource<IUserResource>, IUser 
 
 export interface IUserService extends resource.IResourceClass<IUserResource> {
 	update(user: IUserResource | IUser): IUserResource;
+
 	removeSelf(): IUserResource;
+
 	updatePassword(params: IUserServiceParams): IUserResource;
+
 	self(): IUserResource;
+
 	sendPasswordResetToken(params: IUserServiceParams): Promise<void>;
+
 	resetPasswordWithToken(params: IUserServiceParams): IUserResource;
+
 	signup(params: IUserServiceParams): IUserResource;
+
 	signin(params: IUserServiceParams): IUserResource;
+
 	signout(): void;
+
 	registrationStatus(): IUserResource;
+
+	samlSignin(params: any): IUserResource;
 }
 
 angular.module('users.services').factory('UsersService', [
@@ -79,7 +90,12 @@ angular.module('users.services').factory('UsersService', [
 		const registrationStatusAction: resource.IActionDescriptor = {
 			method: 'GET',
 			url: '/api/users/registration'
-		}
+		};
+
+		const samlSignin: resource.IActionDescriptor = {
+			method: 'POST',
+			url: '/api/auth/saml/signin'
+		};
 
 		return $resource(
 			'/api/users',
@@ -94,7 +110,8 @@ angular.module('users.services').factory('UsersService', [
 				signup: signupAction,
 				signin: signinAction,
 				signout: signoutAction,
-				registrationStatus: registrationStatusAction
+				registrationStatus: registrationStatusAction,
+				samlSignin: samlSignin
 			}
 		) as IUserService;
 	}

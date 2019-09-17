@@ -1,17 +1,17 @@
 'use strict';
 
-import { NextFunction, Request, Response } from 'express';
+import {NextFunction, Request, Response} from 'express';
 import _ from 'lodash';
-import { Types } from 'mongoose';
+import {Types} from 'mongoose';
 import multer from 'multer';
 import config from '../../../../config/ApplicationConfig';
-import { CapabilityModel} from '../../../capabilities/server/models/CapabilityModel';
+import {CapabilityModel} from '../../../capabilities/server/models/CapabilityModel';
 import CoreServerErrors from '../../../core/server/controllers/CoreServerErrors';
 import CoreServerHelpers from '../../../core/server/controllers/CoreServerHelpers';
 import MessagesServerController from '../../../messages/server/controllers/MessagesServerController';
-import { ProposalModel } from '../../../proposals/server/models/ProposalModel';
-import { IUserModel } from '../../../users/server/models/UserModel';
-import { IOrgModel, OrgModel } from '../models/OrgModel';
+import {ProposalModel} from '../../../proposals/server/models/ProposalModel';
+import {IUserModel} from '../../../users/server/models/UserModel';
+import {IOrgModel, OrgModel} from '../models/OrgModel';
 
 class OrgsServerController {
 	public static getInstance() {
@@ -110,7 +110,7 @@ class OrgsServerController {
 
 		const newOrgInfo = req.body;
 		CoreServerHelpers.applyAudit(newOrgInfo, req.user);
-		OrgModel.findOneAndUpdate({ _id: req.org.id }, newOrgInfo, { new: true }, async (err, updatedOrg) => {
+		OrgModel.findOneAndUpdate({_id: req.org.id}, newOrgInfo, {new: true}, async (err, updatedOrg) => {
 			if (err) {
 				res.status(500).send({
 					message: CoreServerErrors.getErrorMessage(err)
@@ -183,8 +183,9 @@ class OrgsServerController {
 
 	public async myadmin(req: Request, res: Response): Promise<void> {
 		try {
+			console.log(req);
 			const orgs = await OrgModel.find({
-				admins: { $in: [req.user._id] }
+				admins: {$in: [req.user._id]}
 			})
 				.populate('owner', '_id lastName firstName displayName profileImageURL')
 				.populate('createdBy', 'displayName')
@@ -218,7 +219,7 @@ class OrgsServerController {
 	public async my(req: Request, res: Response): Promise<void> {
 		try {
 			const orgs = await OrgModel.find({
-				members: { $in: [req.user._id] }
+				members: {$in: [req.user._id]}
 			})
 				.populate('owner', '_id lastName firstName displayName profileImageURL')
 				.populate('createdBy', 'displayName')
@@ -301,7 +302,7 @@ class OrgsServerController {
 
 		const org = req.org;
 		const storage = multer.diskStorage(config.uploads.diskStorage);
-		const upload = multer({ storage }).single('orgImageURL');
+		const upload = multer({storage}).single('orgImageURL');
 		const up = CoreServerHelpers.fileUploadFunctions(org, 'orgImageURL', req, res, upload, org.orgImageURL);
 
 		if (org) {
@@ -357,7 +358,10 @@ class OrgsServerController {
 			const updatedUser = await user.save();
 
 			// send notification to admins for org
-			await MessagesServerController.sendMessages('company-join-request', updatedOrg.admins, { org: updatedOrg, requestingUser: updatedUser });
+			await MessagesServerController.sendMessages('company-join-request', updatedOrg.admins, {
+				org: updatedOrg,
+				requestingUser: updatedUser
+			});
 
 			res.json({
 				user: updatedUser,
@@ -401,7 +405,7 @@ class OrgsServerController {
 			requestingMember.orgsMember.push(org);
 
 			// send notification to requesting user
-			await MessagesServerController.sendMessages('company-join-request-accepted', [requestingMember], { org });
+			await MessagesServerController.sendMessages('company-join-request-accepted', [requestingMember], {org});
 
 			// Save the org and user, return both in response
 			try {
@@ -450,7 +454,7 @@ class OrgsServerController {
 		requestingMember.orgsPending = requestingMember.orgsPending.filter(pendingOrg => pendingOrg.id !== org.id);
 
 		// send notification to requesting user
-		await MessagesServerController.sendMessages('company-join-request-declined', [requestingMember], { org });
+		await MessagesServerController.sendMessages('company-join-request-declined', [requestingMember], {org});
 
 		// Save the org and user and respond with both
 		try {
@@ -476,13 +480,13 @@ class OrgsServerController {
 		try {
 			// Filter orgs by the search term
 			const filterQuery = OrgModel.find({
-				name: { $regex: searchTerm, $options: 'i' }
+				name: {$regex: searchTerm, $options: 'i'}
 			})
 			// Populate orgs with only the necessary information
-			.select('name orgImageURL hasMetRFQ')
-			.populate('admins', '_id')
-			.populate('members', '_id')
-			.populate('joinRequests', '_id');
+				.select('name orgImageURL hasMetRFQ')
+				.populate('admins', '_id')
+				.populate('members', '_id')
+				.populate('joinRequests', '_id');
 
 			// Retrieve the list of all orgs that match the search term
 			const filteredOrgs = await filterQuery.exec();
@@ -493,7 +497,7 @@ class OrgsServerController {
 				.exec();
 
 			// Return the list of filtered orgs for the current page and the total number of filtered items
-			res.json({'data': pagedOrgs, 'totalFilteredItems': filteredOrgs.length });
+			res.json({'data': pagedOrgs, 'totalFilteredItems': filteredOrgs.length});
 
 		} catch (error) {
 			res.status(422).send({
@@ -531,8 +535,8 @@ class OrgsServerController {
 		try {
 			// Retrieve a list of all capabilities
 			const allCapabilities = await CapabilityModel.find({})
-			.populate('skills')
-			.exec();
+				.populate('skills')
+				.exec();
 
 			// Retrieve a list of all capabilities covered by members of the org
 			const memberCaps = org.members ? _.flatten(org.members.map(member => member.capabilities)) : [];
@@ -574,7 +578,7 @@ class OrgsServerController {
 	// Note: if a proposal is SUBMITTED, it will be set back to DRAFT if a user is removed
 	private async removeUserFromProposals(user: IUserModel, org: IOrgModel): Promise<void> {
 		const rightNow = new Date();
-		const proposals = await ProposalModel.find({ org: org._id })
+		const proposals = await ProposalModel.find({org: org._id})
 			.populate('opportunity', 'opportunityTypeCd deadline')
 			.exec();
 
@@ -599,15 +603,15 @@ class OrgsServerController {
 
 	private async addAdminToOrg(user: IUserModel, org: IOrgModel): Promise<IOrgModel> {
 		// depopulate the objects before adding since orgs and users are a circular reference, and mongoose chokes
-		org.admins.push(user.toObject({ depopulate: true }));
-		org.members.push(user.toObject({ depopulate: true }));
+		org.admins.push(user.toObject({depopulate: true}));
+		org.members.push(user.toObject({depopulate: true}));
 		return await org.save();
 	}
 
 	private async addOrgToUser(user: IUserModel, org: IOrgModel): Promise<IUserModel> {
 		// depopulate the objects before adding since orgs and users are a circular reference, and mongoose chokes
-		user.orgsAdmin.push(org.toObject({ depopulate: true }));
-		user.orgsMember.push(org.toObject({ depopulate: true }));
+		user.orgsAdmin.push(org.toObject({depopulate: true}));
+		user.orgsMember.push(org.toObject({depopulate: true}));
 		return await user.save();
 	}
 

@@ -1,10 +1,10 @@
 'use strict';
 
-import { Ng1StateDeclaration } from '@uirouter/angularjs';
-import { StateService } from '@uirouter/core';
-import angular, { IController, IRootScopeService, IScope, IWindowService, uiNotification } from 'angular';
-import { IAuthenticationService } from '../../services/AuthenticationService';
-import { IUserService } from '../../services/UsersService';
+import {Ng1StateDeclaration} from '@uirouter/angularjs';
+import {StateService} from '@uirouter/core';
+import angular, {IController, IRootScopeService, IScope, IWindowService, uiNotification} from 'angular';
+import {IAuthenticationService} from '../../services/AuthenticationService';
+import {IUserService} from '../../services/UsersService';
 
 interface ICredentials {
 	username: string;
@@ -60,6 +60,17 @@ export class AuthenticationController implements IController {
 		}
 	}
 
+	public async samlSignin(): Promise<void> {
+		try {
+			this.$window.location.href = '/api/auth/saml';
+		} catch (e) {
+			this.Notification.error({
+				title: 'Error',
+				message: e.message
+			});
+		}
+	}
+
 	public callOauthProvider(url: string): void {
 		if (this.$state.previous && this.$state.previous.href) {
 			sessionStorage.setItem('prevState', this.$state.previous.state.name);
@@ -68,6 +79,10 @@ export class AuthenticationController implements IController {
 
 		// Effectively call OAuth authentication route:
 		this.$window.location.href = url;
+	}
+
+	public callSamlSignin(): void {
+		this.$window.location.href = '/api/auth/saml';
 	}
 }
 

@@ -63,8 +63,9 @@ class AuthRouter {
 		app.route('/api/auth/saml/consume')
 			.all(AuthPolicy.isAllowed)
 			.get(UserAuthenticationController.samlResponse);
-		app.route('/saml')
-			.all(AuthPolicy.isAllowed);
+		app.route('/api/auth/saml/signin')
+			.all(AuthPolicy.isAllowed)
+			.post(UserAuthenticationController.samlSignin);
 	};
 }
 

@@ -7,6 +7,7 @@ import MessagesServerController from '../../../../messages/server/controllers/Me
 import {IUserModel, UserModel} from '../../models/UserModel';
 import * as fs from "fs";
 import * as samlify from 'samlify';
+import * as url from "url";
 
 class UserAuthenticationController {
 	public static getInstance() {
@@ -21,6 +22,11 @@ class UserAuthenticationController {
 	private noReturnUrls = ['/authentication/signin', '/authentication/signup'];
 
 	private saml = require('samlify');
+
+	private cookieParser = require('cookie-parser');
+	private cookiee = require('cookie-encryption');
+
+	private COOKIE_CODE = 'w450n84bn09ba0w3ba300730a93nv3070ba5qqvbv07';
 
 	private ServiceProvider = this.saml.ServiceProvider;
 	private IdentityProvider = this.saml.IdentityProvider;
@@ -37,9 +43,19 @@ class UserAuthenticationController {
 		metadata: fs.readFileSync('./config/saml/config/idp.xml')
 	});
 
+	private cookieVault;
+
 	private constructor() {
 		this.signin = this.signin.bind(this);
 		this.signup = this.signup.bind(this);
+		const cookieHoursMaxAge = 12;
+		this.cookieVault = this.cookiee(this.COOKIE_CODE, {
+			cipher: 'aes-256-cbc',
+			encoding: 'base64',
+			cookie: 'ssohist',
+			maxAge: cookieHoursMaxAge * 60 * 60 * 1000,
+			httpOnly: true
+		});
 	}
 
 	public signup(req: Request, res: Response): void {
@@ -192,8 +208,101 @@ class UserAuthenticationController {
 	};
 
 	/**
+	 * Helper function to save or update saml user
+	 */
+	public saveSamlUserProfile = (req, res, userProfile) => {
+		if (!req.user) {
+			const searchMainProviderIdentifierField = 'email';
+
+			// Define main provider search query
+			const mainProviderSearchQuery: any = {};
+			mainProviderSearchQuery.provider = 'saml';
+			mainProviderSearchQuery[searchMainProviderIdentifierField] = userProfile.email;
+
+			// Setup info object
+			const info: any = {};
+
+			// Set redirection path on session.
+			// Do not redirect to a signin or signup page
+			if (this.noReturnUrls.indexOf(req.query.redirect_to) === -1) {
+				info.redirect_to = req.query.redirect_to;
+			}
+
+			UserModel.findOne(mainProviderSearchQuery, (err, user) => {
+				if (err) {
+					return err;
+				} else {
+					if (!user) {
+						const possibleUsername = userProfile.email;
+
+						UserModel.schema.statics.findUniqueUsername(possibleUsername, null, availableUsername => {
+							user = new UserModel({
+								firstName: userProfile.firstName,
+								lastName: userProfile.lastName,
+								username: availableUsername,
+								displayName: userProfile.firstName,
+								profileImageURL: 'img/default.png',
+								provider: 'saml'
+							});
+
+							user.email = userProfile.email;
+							user.roles = ["user"];
+							// And save the user
+							user.save(saveErr => {
+								if (saveErr) {
+									console.error(saveErr);
+								}
+								this.samlSignin(user, req, res);
+							});
+						});
+					} else {
+						this.samlSignin(user, req, res);
+					}
+				}
+			});
+		} else {
+			//TODO: Need to handle this
+		}
+	};
+
+	public samlSignin = (user, req, res) => {
+		if (!user.email || this.cookieVault.read(req) !== this.COOKIE_CODE) {
+			res.redirect('/authentication');
+		} else {
+			const searchMainProviderIdentifierField = 'email';
+
+			// Define main provider search query
+			const mainProviderSearchQuery: any = {};
+			mainProviderSearchQuery.provider = 'saml';
+			mainProviderSearchQuery[searchMainProviderIdentifierField] = user.email;
+
+			UserModel.findOne(mainProviderSearchQuery, (err, user) => {
+				if (err) {
+					res.redirect(401, '/authentication');
+				} else if (!user) {
+					res.redirect(401, '/authenticaiton');
+				} else {
+					req.login(user, loginErr => {
+						if (loginErr) {
+							return res.redirect('/authentication/signin');
+						}
+						if (!user.email) {
+							return res.redirect('/settings/profile');
+						} else {
+							return res.redirect('/');
+						}
+					});
+				}
+			});
+		}
+
+	};
+
+
+	/**
 	 * Remove OAuth provider
 	 */
+
 	public removeOAuthProvider = (req, res) => {
 		const user = req.user;
 		const provider = req.query.provider;
@@ -294,19 +403,6 @@ class UserAuthenticationController {
 	};
 
 	public samlResponse = (req, res) => {
-		const cookieParser = require('cookie-parser');
-		const cookiee = require('cookie-encryption');
-
-		const COOKIE_CODE = 'w450n84bn09ba0w3ba300730a93nv3070ba5qqvbv07';
-		const cookieHoursMaxAge = 12;
-
-		var cookieVault = cookiee(COOKIE_CODE, {
-			cipher: 'aes-256-cbc',
-			encoding: 'base64',
-			cookie: 'ssohist',
-			maxAge: cookieHoursMaxAge * 60 * 60 * 1000,
-			httpOnly: true
-		});
 
 		samlify.setSchemaValidator({
 			validate: (response: string) => {
@@ -318,8 +414,15 @@ class UserAuthenticationController {
 		this.sp.parseLoginResponse(this.idp, 'post', req)
 			.then(parseResult => {
 				if (parseResult.extract.attributes.email) {
-					cookieVault.write(req, COOKIE_CODE);
-					res.redirect('/');
+					this.cookieVault.write(req, this.COOKIE_CODE);
+					// this.saveSamlUserProfile(req, parseResult.extract.attributes, this.samlAuthCallback);
+					const user = this.saveSamlUserProfile(req, res, parseResult.extract.attributes);
+					// res.redirect(url.format({
+					// 	pathname: '/',
+					// 	query: {
+					// 		'email': parseResult.extract.attributes.email
+					// 	}
+					// }));
 				} else {
 					res.json("message", "error");
 				}
@@ -327,6 +430,14 @@ class UserAuthenticationController {
 			console.error(e);
 		});
 	};
+
+	private samlAuthCallback(err, user, info) {
+		if (err) {
+			console.log(err);
+			return;
+		}
+		return user;
+	}
 
 	private handleLoginResponse(res: Response, user: IUserModel) {
 		return (loginErr: any) => {
