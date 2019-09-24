@@ -16,6 +16,8 @@ The [BCDevExchange](https://bcdevexchange.org) is a platform that provides new w
 
 ***
 
+##test
+
 ## Contribute
 
 We are open to pull requests. Please read our [contributing guidelines](https://github.com/BCDevExchange/devex/blob/master/CONTRIBUTING.md). If you are making a pull request, please refer to our [pull request template](https://github.com/BCDevExchange/devex/blob/develop/.github/PULL_REQUEST_TEMPLATE.md).
@@ -57,7 +59,7 @@ $ npm run dev
 
 Alternatively, if you do not want to run the application in a docker container, you can install the dependencies locally with:
 ```bash
-$ yarn install
+$ npm install
 ```
 and then execute `npm run dev` from a terminal on your machine.  If you are running the application outside of the container, ensure you have manually launched the MongoDB Docker container using `docker start db_devex` (the `dev.sh` script will do this for you if you use this method).
 

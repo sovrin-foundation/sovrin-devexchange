@@ -9,6 +9,7 @@
     <script src="main.js"></script>
 </head>
 <body>
+<!-- TODO: // mat need to update URL once decided for email templates -->
     <img src="https://bcdevexchange.org/modules/core/client/img/logo/new-logo-220px.png"> <br/>
     <p>Hi {{user.displayName}},</p>
     <p>A new opportunity has just been posted:</p>
@@ -18,7 +19,8 @@
         <li>Deadline to apply: <b>{{ opportunity.dateDeadline }}</b></li>
     </ul>
     <h4><a href="{{ domain }}/{{ opportunity.path }}">Click here to see the details</a></h4>
-    <p>Have a great day!<br/><b>The BCDevExchange Team</b></p>
+<!-- TODO: // mat need to update URL once decided for email templates -->
+    <p>Have a great day!<br/><b>The Sovrin Foundation DevExchange Team</b></p>
     <br>
     <p><i>To stop receiving notifications about new opportunities, <a href="{{ domain }}/opportunities">browse to the opportunity list</a> and stop listening, or visit <a href="{{ domain }}/settings/privacy">your profile</a> and uncheck "Tell me about new opportunities" </i></p>
 </body>

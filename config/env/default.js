@@ -3,11 +3,11 @@
 var path = require('path');
 module.exports = {
 	app: {
-		title: 'BCDevExchange - The BC Developer\'s Exchange',
+		title: 'Sovrin Foundation - Developer\'s Exchange',
 		description: 'Better ways for government and developers to work together',
 		keywords: 'developer, government, codewithus, agile, digitial service',
 		googleAnalyticsTrackingID: process.env.GOOGLE_ANALYTICS_TRACKING_ID || 'GOOGLE_ANALYTICS_TRACKING_ID',
-		domain: process.env.DOMAIN || 'http://localhost:3000',
+		domain: process.env.DOMAIN || 'https://localhost:3000',
 		googleRecaptchaSiteID: process.env.RECAPTCHA_SITE_ID
 	},
 	devexProd: process.env.DEVEX_PROD || false,
@@ -83,29 +83,30 @@ module.exports = {
 	sessionCollection: 'sessions',
 	// Lusca config
 	csrf: {
-		csrf: { 'angular': true },
+		// csrf: { 'angular': true },
+		csrf: false,
 		csp: false,
 		xframe: 'SAMEORIGIN',
 		p3p: 'ABCDEF',
 		xssProtection: true
 	},
 	logo: 'modules/core/client/img/brand/logo.png',
-	favicon: 'modules/core/client/img/brand/favicon.ico',
+	favicon: 'modules/core/client/img/brand/favicon.png',
 	uploads: {
 		diskStorage: {
-			destination: function(req, file, cb) {
+			destination: function (req, file, cb) {
 				cb(null, path.resolve('public/uploads/'));
 			},
-			filename: function(req, file, cb) {
+			filename: function (req, file, cb) {
 				var datetimestamp = Date.now();
 				// console.log ('file.originalname', file.originalname);
 				cb(
 					null,
 					file.fieldname +
-						'-' +
-						datetimestamp +
-						'.' +
-						file.originalname.split('.')[file.originalname.split('.').length - 1]
+					'-' +
+					datetimestamp +
+					'.' +
+					file.originalname.split('.')[file.originalname.split('.').length - 1]
 				);
 			}
 		},
@@ -137,52 +138,52 @@ module.exports = {
 	seedDB: {
 		seed: process.env.MONGO_SEED === 'true',
 		options: {
-		  logResults: process.env.MONGO_SEED_LOG_RESULTS !== 'false',
-		  seedUser: {
-			username: process.env.MONGO_SEED_USER_USERNAME || 'user',
-			provider: 'local',
-			email: process.env.MONGO_SEED_USER_EMAIL || 'user@localhost.com',
-			firstName: 'User',
-			lastName: 'Local',
-			displayName: 'User Local',
-			roles: ['user']
-		  },
-		  seedAdmin: {
-			username: process.env.MONGO_SEED_ADMIN_USERNAME || 'admin',
-			provider: 'local',
-			email: process.env.MONGO_SEED_ADMIN_EMAIL || 'admin@localhost.com',
-			firstName: 'Admin',
-			lastName: 'Local',
-			displayName: 'Admin Local',
-			roles: ['user', 'admin']
-		  },
-		  seedDev: {
-			username: 'dev',
-					provider: 'local',
-					email: 'dev@localhost.com',
-					firstName: 'Test',
-					lastName: 'Developer',
-					displayName: 'Test Developer',
-					roles: ['user']
-		  },
-		  seedDev2: {
-			username: 'dev2',
-					provider: 'local',
-					email: 'dev2@localhost.com',
-					firstName: 'Test 2',
-					lastName: 'Developer 2',
-					displayName: 'Test Developer 2',
-					roles: ['user']
-		  },
-		  seedGov: {
-			username: 'gov',
-					provider: 'local',
-					email: 'gov@localhost.com',
-					firstName: 'Test',
-					lastName: 'Government',
-					displayName: 'Test Government',
-					roles: ['user', 'gov']
-		  }
+			logResults: process.env.MONGO_SEED_LOG_RESULTS !== 'false',
+			seedUser: {
+				username: process.env.MONGO_SEED_USER_USERNAME || 'user',
+				provider: 'local',
+				email: process.env.MONGO_SEED_USER_EMAIL || 'user@localhost.com',
+				firstName: 'User',
+				lastName: 'Local',
+				displayName: 'User Local',
+				roles: ['user']
+			},
+			seedAdmin: {
+				username: process.env.MONGO_SEED_ADMIN_USERNAME || 'admin',
+				provider: 'local',
+				email: process.env.MONGO_SEED_ADMIN_EMAIL || 'admin@localhost.com',
+				firstName: 'Admin',
+				lastName: 'Local',
+				displayName: 'Admin Local',
+				roles: ['user', 'admin']
+			},
+			seedDev: {
+				username: 'dev',
+				provider: 'local',
+				email: 'dev@localhost.com',
+				firstName: 'Test',
+				lastName: 'Developer',
+				displayName: 'Test Developer',
+				roles: ['user']
+			},
+			seedDev2: {
+				username: 'dev2',
+				provider: 'local',
+				email: 'dev2@localhost.com',
+				firstName: 'Test 2',
+				lastName: 'Developer 2',
+				displayName: 'Test Developer 2',
+				roles: ['user']
+			},
+			seedGov: {
+				username: 'gov',
+				provider: 'local',
+				email: 'gov@localhost.com',
+				firstName: 'Test',
+				lastName: 'Government',
+				displayName: 'Test Government',
+				roles: ['user', 'gov']
+			}
 		}
-	  }
+	}
 };

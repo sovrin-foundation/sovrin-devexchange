@@ -1,10 +1,9 @@
-import { ICapability } from "../../capabilities/shared/ICapabilityDTO";
-import { ICapabilitySkill } from "../../capabilities/shared/ICapabilitySkillDTO";
-import { IProgram } from "../../programs/shared/IProgramDTO";
-import { IProject } from "../../projects/shared/IProjectDTO";
-import { IProposal } from "../../proposals/shared/IProposalDTO";
-import { IUser } from "../../users/shared/IUserDTO";
-import { Types } from "mongoose";
+import {ICapability} from '../../capabilities/shared/ICapabilityDTO';
+import {ICapabilitySkill} from '../../capabilities/shared/ICapabilitySkillDTO';
+import {IProgram} from '../../programs/shared/IProgramDTO';
+import {IProject} from '../../projects/shared/IProjectDTO';
+import {IProposal} from '../../proposals/shared/IProposalDTO';
+import {IUser} from '../../users/shared/IUserDTO';
 
 export interface IPhase {
 	isImplementation?: boolean;
@@ -74,8 +73,24 @@ export interface IContract {
 	impactNotApproved: string;
 }
 
+export interface IAcceptedCurrency {
+	code: string;
+	symbol: string;
+}
+
+export interface IPayment {
+	id: string,
+	amount: number,
+	paid: boolean,
+	currency: string,
+	status: string,
+	receiptEmail: string,
+	receiptUrl: string,
+	paymentSuccess: boolean
+}
+
 export interface IOpportunity {
-    _id: string;
+	_id: string;
 	code: string;
 	opportunityTypeCd: string;
 	name: string;
@@ -99,6 +114,7 @@ export interface IOpportunity {
 	issueUrl: string;
 	issueNumber: string;
 	assignment: Date;
+	assignedAt: Date;
 	proposal: IProposal;
 	phases: IPhases;
 	budget: number;
@@ -123,6 +139,10 @@ export interface IOpportunity {
 	criteria: string;
 	skills: string[];
 	earn?: number;
+	fee?: number,
+	feeDisplay?: string,
+	currency: IAcceptedCurrency,
+	postedAmount?: string,
 	start: Date;
 	endDate: Date;
 	assignor?: IUser;
@@ -131,4 +151,6 @@ export interface IOpportunity {
 	userIs?: any;
 	skilllist?: string;
 	isWatching?: boolean;
+	paymentToken?: any;
+	payment: IPayment[]
 }

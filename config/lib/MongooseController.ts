@@ -39,8 +39,9 @@ class MongooseController {
 				resolve(mongoose.connection);
 			});
 
-			mongoose.connection.on('disconnected', () => {
+			mongoose.connection.on('disconnected', (e) => {
 				console.log(chalk.yellow(`Disconnected from ${config.db.uri}`));
+				console.log(e);
 
 				// attempt to reconnect to database every 5 seconds
 				setTimeout(() => {

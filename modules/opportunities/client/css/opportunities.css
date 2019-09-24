@@ -1,11 +1,13 @@
 div.opportunity-header {
 	margin: 2em 0 4em;
 }
+
 .opportunity-title {
 	font-size: 2em;
 	font-weight: bold;
 	margin-bottom: 20px;
 }
+
 .opportunity-description {
 	display: block;
 	clear: both;
@@ -22,6 +24,7 @@ td.opportunity-details {
 	padding: 0 25px 15px 0;
 	white-space: nowrap;
 }
+
 td.opportunity-details:last-child {
 	white-space: revert;
 	width: 99%;
@@ -79,6 +82,7 @@ div.rejected {
 	font-weight: normal;
 	padding: 4px 9px;
 }
+
 .value-tally {
 	font-size: 0.8em;
 	margin-top: 1px;
@@ -88,56 +92,67 @@ div.rejected {
 	width: 100%;
 	margin: 25px auto;
 }
+
 .weight-entry-label-cell {
 	padding-right: 2em;
 }
+
 .weight-entry-input {
 	width: 3em;
 	margin-right: 1em;
 	text-align: right;
 }
+
 .weight-total-text-valid {
 	width: 2em;
 	margin-right: 1em;
 	font-weight: bold;
 	color: green;
 }
+
 .weight-total-text-invalid {
 	width: 2em;
 	margin-right: 1em;
 	font-weight: bold;
 	color: red;
 }
+
 /* Opportunity addenda styling */
 ol.addendum-list {
 	-webkit-padding-start: 20px;
 	max-height: 340px;
 	overflow-y: auto;
 }
+
 li.addendum-list-item {
 	padding: 1em 0;
 	border-bottom: 1px dotted #f6f8fa;
 }
+
 span.addendum-item,
 div.addendum-item {
 	margin-left: 25px;
 	padding-bottom: 1em;
 	border-bottom: 1px solid gray;
 }
+
 div.addendum-item-editing {
 	margin-left: 25px;
 	padding-bottom: 1em;
 }
+
 div.addendum-created {
 	margin-bottom: 0.5em;
 	font-size: smaller;
 	font-weight: 600;
 	color: #b3b3b3;
 }
+
 div.add-button-wrapper {
 	display: flex;
 	align-items: center;
 }
+
 @media (min-width: 768px) {
 	.sticky-sidebar {
 		padding: 20px 0 20px 50px;
@@ -146,19 +161,175 @@ div.add-button-wrapper {
 		bottom: 40px;
 	}
 }
+
 @media (max-width: 767px) {
 	.sticky-sidebar {
 		padding: 0;
 		position: relative;
 	}
 }
+
 div.overline {
 	text-transform: uppercase;
 	font-size: 0.8em;
 	letter-spacing: 0.015em;
 	margin-bottom: 3px;
 }
+
 div.gov-contact {
 	font-size: 1.1em;
 	font-weight: 600;
+}
+
+.payment-body.modal-body {
+	background-color: #525f7f;
+}
+
+.payment-body.modal-body * {
+	font-family: Quicksand, Open Sans, Segoe UI, sans-serif;
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.payment-body.modal-body .fieldset {
+	margin: 0 15px 30px;
+	padding: 0;
+	border-style: none;
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-flow: row wrap;
+	flex-flow: row wrap;
+	-ms-flex-pack: justify;
+	justify-content: space-between;
+}
+
+.payment-body.modal-body .field {
+	padding: 10px 20px 11px;
+	background-color: #7488aa;
+	border-radius: 20px;
+	width: 100%;
+}
+
+.payment-body.modal-body .field.half-width {
+	width: calc(50% - (5px / 2));
+}
+
+.payment-body.modal-body .field.third-width {
+	width: calc(33% - (5px / 3));
+}
+
+.payment-body.modal-body .field + .field {
+	margin-top: 6px;
+}
+
+.payment-body.modal-body .field.focus,
+.payment-body.modal-body .field:focus {
+	color: #424770;
+	background-color: #f6f9fc;
+}
+
+.payment-body.modal-body .field.invalid {
+	background-color: #fa755a;
+}
+
+.payment-body.modal-body .field.invalid.focus {
+	background-color: #f6f9fc;
+}
+
+.payment-body.modal-body .field.focus::-webkit-input-placeholder,
+.payment-body.modal-body .field:focus::-webkit-input-placeholder {
+	color: #cfd7df;
+}
+
+.payment-body.modal-body .field.focus::-moz-placeholder,
+.payment-body.modal-body .field:focus::-moz-placeholder {
+	color: #cfd7df;
+}
+
+.payment-body.modal-body .field.focus:-ms-input-placeholder,
+.payment-body.modal-body .field:focus:-ms-input-placeholder {
+	color: #cfd7df;
+}
+
+.payment-body.modal-body input, .payment-body.modal-body button {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	outline: none;
+	border-style: none;
+}
+
+.payment-body.modal-body input {
+	color: #fff;
+}
+
+.payment-body.modal-body input::-webkit-input-placeholder {
+	color: #9bacc8;
+}
+
+.payment-body.modal-body input::-moz-placeholder {
+	color: #9bacc8;
+}
+
+.payment-body.modal-body input:-ms-input-placeholder {
+	color: #9bacc8;
+}
+
+.payment-body.modal-body button {
+	display: block;
+	width: calc(100% - 30px);
+	height: 40px;
+	margin: 0 15px;
+	background-color: #fcd669;
+	border-radius: 20px;
+	color: #525f7f;
+	font-weight: 600;
+	text-transform: uppercase;
+	cursor: pointer;
+}
+
+.payment-body.modal-body button:active {
+	background-color: #f5be58;
+}
+
+.payment-body.modal-body .error svg .base {
+	fill: #fa755a;
+}
+
+.payment-body.modal-body .error svg .glyph {
+	fill: #fff;
+}
+
+.payment-body.modal-body .error .message {
+	color: #fff;
+}
+
+.payment-body.modal-body .success .icon .border {
+	stroke: #fcd669;
+}
+
+.payment-body.modal-body .success .icon .checkmark {
+	stroke: #fff;
+}
+
+.payment-body.modal-body .success .title {
+	color: #fff;
+}
+
+.payment-body.modal-body .success .message {
+	color: #9cabc8;
+}
+
+.payment-body.modal-body .success .reset path {
+	fill: #fff;
+}
+
+.payment-body.modal-body .success {
+	display: none !important;
+}
+
+.modal-header {
+	color: #fcd669;
+	background-color: #343a40;
+	border-bottom: none;
 }

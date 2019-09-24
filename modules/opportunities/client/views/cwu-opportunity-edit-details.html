@@ -28,7 +28,8 @@
           "name":"location",
           "help":"Where is your office?"
         }'>
-        <select name="location" ng-model="vm.opportunity.location" id="location" class="form-control" ng-options="v as v for v in vm.cities">
+        <select name="location" ng-model="vm.opportunity.location" id="location" class="form-control"
+                ng-options="v as v for v in vm.cities">
           <option value="">Select Location</option>
         </select>
       </form-display>
@@ -37,9 +38,28 @@
           "name":"reward",
           "help":"<p>To the best of your ability, estimate a fair price for the amount of work you think it should take a qualified developer to meet the acceptance criteria. It is best to over-estimate.</p> <p>Right now, Code With Us opportunities may be offered to a maximum of $70,000.</p>"
         }'>
-        <select name="earn" ng-model="vm.opportunity.earn" id="earn" class="form-control" ng-options="v as (v|currency) for v in vm.amounts">
-          <option value="">Select reward amount</option>
-        </select>
+        <div class="btn-group w-100">
+          <select name="currency" ng-model="vm.opportunity.currency" ng-value="c" id="currency-select"
+                  class="form-control col-md-3" ng-change="vm.updateFeeAmount()"
+                  ng-options="c as (c.code + ' ' + vm.htmlDecode(c.symbol)) for c in vm.acceptedCurrencies">
+
+          </select>
+          <select name="earn" ng-model="vm.opportunity.earn" ng-value="v" id="earn" class="form-control"
+                  ng-options="v as v for v in vm.amounts" ng-change="vm.updateFeeAmount()">
+            <option value="">Select reward amount</option>
+          </select>
+        </div>
+
+      </form-display>
+      <form-display x-form="vm.opportunityForm" class="col-sm-12 col-md-3"
+                    x-options='{
+      "title": "Total Price",
+      "name": "feePrice",
+      "help": "<p>The Sovrin Foundation collects a small fee for each opportunity posted to the Dev Exchange of 5%. The amount shown is to total cost to you, the provider. </p>",
+      "id": "feePrice"
+      }'>
+        <input type="text" class='form-control' ng-model='vm.opportunity.feeDisplay'
+               disabled="" aria-disabled="true">
       </form-display>
     </div>
 

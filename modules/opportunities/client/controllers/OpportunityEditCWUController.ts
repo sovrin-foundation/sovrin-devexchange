@@ -1,29 +1,31 @@
 'use strict';
 
-import { StateService } from '@uirouter/core';
-import angular, { IFormController, uiNotification } from 'angular';
-import { IDataService } from '../../../core/client/services/DataService';
-import { IProject } from '../../../projects/shared/IProjectDTO';
-import { IAuthenticationService } from '../../../users/client/services/AuthenticationService';
-import { IOpportunitiesService, IOpportunityResource } from '../services/OpportunitiesService';
+import {StateService} from '@uirouter/core';
+import angular, {IFilterCurrency, IFormController, uiNotification} from 'angular';
+import {IDataService} from '../../../core/client/services/DataService';
+import {IProject} from '../../../projects/shared/IProjectDTO';
+import {IAuthenticationService} from '../../../users/client/services/AuthenticationService';
+import {IOpportunitiesService, IOpportunityResource} from '../services/OpportunitiesService';
 
 export default class OpportunityEditCWUController {
-	public static $inject = ['$state', 'opportunity', 'editing', 'projects', 'AuthenticationService', 'Notification', 'DataService', 'ask', 'TinyMceConfiguration', 'OpportunitiesService'];
+	public static $inject = ['$state', '$filter', 'opportunity', 'editing', 'projects', 'AuthenticationService', 'Notification', 'DataService', 'ask', 'TinyMceConfiguration', 'OpportunitiesService'];
 
 	public isAdmin: boolean;
 	public isGov: boolean;
 	public errorFields: any[];
 	public canPublish: boolean;
-	public amounts: number[];
+	public amounts: any[];
 	public cities: string[];
 	public opportunityForm: IFormController;
 	public projectLink: boolean;
+	public acceptedCurrencies: any[];
 
 	private originalPublishedState: boolean;
 	private isUser: boolean;
 
 	constructor(
 		private $state: StateService,
+		private $filter: IFilterCurrency,
 		public opportunity: IOpportunityResource,
 		public editing: boolean,
 		public projects: IProject[],
@@ -42,6 +44,7 @@ export default class OpportunityEditCWUController {
 		// set up the dropdown amounts for CWU earnings
 		this.initDropDownAmounts();
 		this.cities = this.DataService.cities;
+		this.acceptedCurrencies = this.DataService.acceptedCurrencies;
 
 		// if the user doesn't have the right access then kick them out
 		if (this.editing && !this.isAdmin && !this.opportunity.userIs.admin) {
@@ -60,7 +63,6 @@ export default class OpportunityEditCWUController {
 			this.opportunity.project = this.projects[0];
 			this.opportunity.program = this.projects[0].program;
 		}
-
 		this.refreshOpportunity(this.opportunity);
 	}
 
@@ -86,7 +88,7 @@ export default class OpportunityEditCWUController {
 		if (!this.opportunity.name) {
 			this.Notification.error({
 				message: 'You must enter a title for your opportunity',
-				title: "<i class='fas fa-exclamation-triangle'></i> Errors on Page"
+				title: '<i class=\'fas fa-exclamation-triangle\'></i> Errors on Page'
 			});
 			return;
 		}
@@ -136,12 +138,12 @@ export default class OpportunityEditCWUController {
 
 			// if creating a new opportunity, transition to the edit view after saving
 			if (!this.editing) {
-				this.$state.go('opportunityadmin.editcwu', { opportunityId: this.opportunity.code });
+				this.$state.go('opportunityadmin.editcwu', {opportunityId: this.opportunity.code});
 			}
 		} catch (error) {
 			this.Notification.error({
 				title: 'Error',
-				message: "<i class='fas fa-exclamation-triangle'></i> " + error.data.message
+				message: '<i class=\'fas fa-exclamation-triangle\'></i> ' + error.data.message
 			});
 		}
 	}
@@ -183,7 +185,7 @@ export default class OpportunityEditCWUController {
 			} catch (error) {
 				this.Notification.error({
 					title: 'Error',
-					message: "<i class='fas fa-exclamation-triangle'></i> " + error.data.message
+					message: '<i class=\'fas fa-exclamation-triangle\'></i> ' + error.data.message
 				});
 			}
 		}
@@ -222,14 +224,38 @@ export default class OpportunityEditCWUController {
 		} catch (error) {
 			this.Notification.error({
 				title: 'Error',
-				message: "<i class='fas fa-exclamation-triangle'></i> " + error.data.message
+				message: '<i class=\'fas fa-exclamation-triangle\'></i> ' + error.data.message
 			});
 		}
 	}
 
+	public updateFeeAmount() {
+		if (this.opportunity.currency.code === '') {
+			this.Notification.error({
+				message: 'Please select a currency to associate with amount.'
+			});
+		}
+		if (this.opportunity.earn === 0) {
+			this.Notification.error({
+				message: 'Please select an amount greater than 0'
+			});
+		}
+		if (this.opportunity.earn > 0) {
+			const feeAmount = 1.005;
+			this.opportunity.fee = Math.round(this.opportunity.earn * feeAmount) - this.opportunity.earn;
+			this.opportunity.feeDisplay = `${this.opportunity.currency.code}${this.htmlDecode(this.opportunity.currency.symbol)} ${Math.round(this.opportunity.earn * feeAmount)}`;
+		}
+	}
+
+	public htmlDecode(htmlToDecode) {
+		const e = document.createElement('div');
+		e.innerHTML = htmlToDecode;
+		return e.childNodes[0].nodeValue;
+	}
+
 	private initDropDownAmounts() {
 		this.amounts = [];
-		let i: number;
+		let i: any;
 		for (i = 500; i <= 70000; i += 500) {
 			this.amounts.push(i);
 		}

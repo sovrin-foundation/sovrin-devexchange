@@ -1,7 +1,14 @@
 'use strict';
 
-import { UIViewScrollProvider } from '@uirouter/angularjs/lib/viewScroll';
-import angular, { ICompileProvider, idle, IHttpProvider, ILocationProvider, ILogProvider, uiNotification } from 'angular';
+import {UIViewScrollProvider} from '@uirouter/angularjs/lib/viewScroll';
+import angular, {
+	ICompileProvider,
+	idle,
+	IHttpProvider,
+	ILocationProvider,
+	ILogProvider,
+	uiNotification
+} from 'angular';
 
 export interface IApplicationConfiguration {
 	applicationEnvironment: string;
@@ -60,6 +67,7 @@ class ApplicationConfiguration implements IApplicationConfiguration {
 		angular.module(this.applicationModuleName).requires.push(moduleName);
 	}
 
+	// @ts-ignore
 	private bootstrapConfig(
 		$compileProvider: ICompileProvider,
 		$locationProvider: ILocationProvider,

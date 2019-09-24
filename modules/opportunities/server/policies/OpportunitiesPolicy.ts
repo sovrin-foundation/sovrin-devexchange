@@ -65,6 +65,10 @@ class OpportunitiesPolicy {
 						permissions: ['put']
 					},
 					{
+						resources: '/api/opportunities/:opportunityId/assignswu/:proposalId',
+						permissions: ['put']
+					},
+					{
 						resources: '/api/opportunities/:opportunityId/unassign/:proposalId',
 						permissions: ['put']
 					},
@@ -89,6 +93,10 @@ class OpportunitiesPolicy {
 						permissions: ['put']
 					},
 					{
+						resources: '/api/opportunities/for/program/:programId',
+						permissions: ['get']
+					},
+					{
 						resources: '/api/opportunities/:opportunityId/action',
 						permissions: ['post']
 					},
@@ -103,6 +111,10 @@ class OpportunitiesPolicy {
 					{
 						resources: '/api/opportunities/:opportunityId/myProposalArchive',
 						permissions: ['get']
+					},
+					{
+						resources: '/api/opportunities/:opportunityId/fee',
+						permissions: ['*']
 					}
 				]
 			},

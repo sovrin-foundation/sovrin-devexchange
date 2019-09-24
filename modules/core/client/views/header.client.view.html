@@ -1,7 +1,7 @@
 <nav class="navbar navbar-dark bg-dark navbar-expand-lg">
   <div class="container" ng-controller="HeaderController as vm">
     <div class="navbar-header">
-      <a href="/" id="home"><img class="navbar-brand" src="/modules/core/client/img/logo/new-logo-white.svg" alt="BCDevExchange"
+      <a href="/" id="home"><img class="navbar-brand" src="/modules/core/client/img/logo/sovrin_logo.png" alt="SovrinDevExchange"
           ui-sref="home"></a>
       <button type="button" class="navbar-toggler" ng-click="vm.isCollapsed = !vm.isCollapsed">
         <span class="navbar-toggler-icon"></span>
@@ -36,9 +36,10 @@
 
       <!-- Sign-in -->
       <ul class="nav navbar-nav ml-auto" ng-hide="vm.user">
+
         <li ui-sref-active="active" class="nav-item">
           <a id="authentication.signin" ui-sref="authentication" class="nav-link">
-            <i class="fab fa-lg fa-github" aria-hidden="true"></i> Sign In</a>
+            Sign In</a>
         </li>
       </ul>
 
@@ -60,7 +61,7 @@
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" ng-repeat="item in vm.accountMenu.items" ui-sref="{{item.state}}" ng-bind="item.title"></a>
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="/api/auth/signout" target="_self">Sign Out</a>
+            <a data-automation-id="lnkSignOut" class="dropdown-item" href="/api/auth/signout" target="_self">Sign Out</a>
           </div>
         </li>
       </ul>

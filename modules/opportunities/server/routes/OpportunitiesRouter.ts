@@ -41,6 +41,10 @@ class OpportunitiesRouter {
 			.all(OpportunitiesPolicy.isAllowed)
 			.put(OpportunitiesServerController.assign);
 
+		app.route('/api/opportunities/:opportunityId/assignswu/:proposalId')
+			.all(OpportunitiesPolicy.isAllowed)
+			.put(OpportunitiesServerController.assignswu);
+
 		app.route('/api/opportunities/:opportunityId/unassign/:proposalId')
 			.all(OpportunitiesPolicy.isAllowed)
 			.put(OpportunitiesServerController.unassign);
@@ -79,10 +83,19 @@ class OpportunitiesRouter {
 			.all(OpportunitiesPolicy.isAllowed)
 			.put(OpportunitiesServerController.send2FA);
 
+		// Route for retrieving all opportunities associated with a program
+		app.route('/api/opportunities/for/program/:programId')
+			.all(OpportunitiesPolicy.isAllowed)
+			.get(OpportunitiesServerController.forProgram);
+
 		// Route for actioning a pre-approval or approval request via a POST operation
 		app.route('/api/opportunities/:opportunityId/action')
 			.all(OpportunitiesPolicy.isAllowed)
 			.post(OpportunitiesServerController.action);
+
+		app.route('/api/opportunities/:opportunityId/fee')
+			.all(OpportunitiesPolicy.isAllowed)
+			.post(OpportunitiesServerController.fee);
 
 		// Finish by binding the Opportunity middleware
 		app.param('opportunityId', OpportunitiesServerController.opportunityByID);

@@ -2,8 +2,7 @@
 <div ng-cloak class="card-header p-0">
 
   <div class="label-list float-left ml-3">
-    <label ng-if="vm.opportunity.opportunityTypeCd === 'code-with-us'" class="label label-price">{{ opportunity.earn |
-      currency }}</label>
+    <label ng-if="vm.opportunity.opportunityTypeCd === 'code-with-us'" class="label label-price">{{ opportunity.postedAmount }}</label>
     <label ng-if="vm.opportunity.opportunityTypeCd === 'sprint-with-us'" class="label label-price">{{ opportunity.budget |
       currency }}</label>
     <label ng-if="vm.opportunity.opportunityTypeCd === 'sprint-with-us'" class="label label-swu"><i class="fas fa-users"></i>

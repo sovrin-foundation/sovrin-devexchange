@@ -1,18 +1,19 @@
 'use strict';
 
-import angular, { IController, ILocationService, uiNotification } from 'angular';
+import angular, {IController, ILocationService, uiNotification} from 'angular';
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts.js';
 (pdfMake as any).vfs = pdfFonts.pdfMake.vfs;
-import { StateService } from '@uirouter/core';
+
+import {StateService} from '@uirouter/core';
 import moment from 'moment-timezone';
-import { IProposalResource } from '../../../proposals/client/services/ProposalService';
-import { IAuthenticationService } from '../../../users/client/services/AuthenticationService';
-import { IOpportunitiesCommonService } from '../services/OpportunitiesCommonService';
-import { IOpportunitiesService, IOpportunityResource } from '../services/OpportunitiesService';
+import {IProposalResource} from '../../../proposals/client/services/ProposalService';
+import {IAuthenticationService} from '../../../users/client/services/AuthenticationService';
+import {IOpportunitiesCommonService} from '../services/OpportunitiesCommonService';
+import {IOpportunitiesService, IOpportunityResource} from '../services/OpportunitiesService';
 
 export default class OpportunityViewCWUController implements IController {
-	public static $inject = ['$state', '$location', 'opportunity', 'AuthenticationService', 'OpportunitiesService', 'Notification', 'ask', 'myproposal', 'OpportunitiesCommonService'];
+	public static $inject = ['$state', '$location', '$uibModal', 'opportunity', 'AuthenticationService', 'OpportunitiesService', 'Notification', 'ask', 'myproposal', 'OpportunitiesCommonService'];
 
 	public showPreApproval: boolean;
 	public showFinalApproval: boolean;
@@ -28,6 +29,8 @@ export default class OpportunityViewCWUController implements IController {
 	public deadline: string;
 	public assignment: string;
 	public start: string;
+	public stripe;
+	public opportunityPaid = false;
 
 	private approvalAction: string;
 	private approvalType: string;
@@ -36,6 +39,7 @@ export default class OpportunityViewCWUController implements IController {
 	constructor(
 		private $state: StateService,
 		private $location: ILocationService,
+		private $uibModal: any,
 		public opportunity: IOpportunityResource,
 		private AuthenticationService: IAuthenticationService,
 		private OpportunitiesService: IOpportunitiesService,
@@ -51,6 +55,10 @@ export default class OpportunityViewCWUController implements IController {
 		this.hasEmail = this.isUser && this.AuthenticationService.user.email !== '';
 
 		this.refreshOpportunity(this.opportunity);
+	}
+
+	public $onInit(): void {
+		this.paid();
 	}
 
 	public async requestApprovalCode(): Promise<void> {
@@ -142,7 +150,7 @@ export default class OpportunityViewCWUController implements IController {
 		if (isToBeSaved) {
 			this.opportunity.isPublished = isToBePublished;
 			try {
-				const updatedOpportunity = await publishMethod({ opportunityId: this.opportunity._id }).$promise;
+				const updatedOpportunity = await publishMethod({opportunityId: this.opportunity._id}).$promise;
 				this.refreshOpportunity(updatedOpportunity);
 				this.Notification.success({
 					message: '<i class="fas fa-check-circle"></i> ' + publishSuccess
@@ -151,6 +159,16 @@ export default class OpportunityViewCWUController implements IController {
 				this.opportunity.isPublished = publishedState;
 				this.handleError(error);
 			}
+		}
+	}
+
+	public paid(): void {
+		if (this.opportunity.payment.length > 0) {
+			this.opportunity.payment.forEach((value, index) => {
+				if (value.paid) {
+					this.opportunityPaid = true;
+				}
+			});
 		}
 	}
 
@@ -208,7 +226,7 @@ export default class OpportunityViewCWUController implements IController {
 				`Opportunity: ${this.opportunity.name}`,
 				`Opporunity ID: ${this.opportunity.code}`,
 				`Opportunity Type: Code With Us`,
-				`Opportunity Amount: $${this.opportunity.earn}`,
+				`Opportunity Amount: ${this.opportunity.postedAmount}`,
 				`Created on ${new Date(this.opportunity.created).toLocaleString()} PST`
 			],
 			styles: {
@@ -284,6 +302,37 @@ export default class OpportunityViewCWUController implements IController {
 		return momentDate.tz('America/Vancouver').format(dateFormat);
 	}
 
+	// Handle Payments
+	public showPaymentModal(opportunity) {
+		const modalInstance =
+			this.$uibModal.open({
+				animation: true,
+				ariaLabelledBy: 'modal-title',
+				ariaDescribedBy: 'modal-body',
+				templateUrl: 'paymentModal.html',
+				controller: 'OpportunityPaymentCWUController',
+				controllerAs: '$mc',
+				resolve: {
+					opportunity: () => {
+						return opportunity;
+					}
+				}
+			});
+
+		modalInstance.result.then((result) => {
+			this.opportunity.payment = result.payment;
+			if (result.$promise.$$state.status !== 403) {
+				this.Notification.success('Payment Accepted');
+				this.opportunity.payment = result.payment;
+				this.paid();
+				this.refreshOpportunity(this.opportunity);
+				setTimeout(() => {
+					window.location.reload();
+				}, 2000);
+			}
+		});
+	}
+
 	private addWatch() {
 		this.isWatching = this.OpportunitiesCommonService.addWatch(this.opportunity);
 	}
@@ -347,6 +396,7 @@ export default class OpportunityViewCWUController implements IController {
 			message: `<i class="fas fa-exclamation-triangle"></i> ${errorMessage}`
 		});
 	}
+
 }
 
 angular.module('opportunities').controller('OpportunityViewCWUController', OpportunityViewCWUController);

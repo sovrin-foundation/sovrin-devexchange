@@ -1,15 +1,15 @@
 'use strict';
 
-import { Ng1StateDeclaration, StateParams, StateProvider } from '@uirouter/angularjs';
-import angular, { resource } from 'angular';
-import { ICapabilitiesService, ICapabilityResource } from '../../../capabilities/client/services/CapabilitiesService';
-import { IOrgService } from '../../../orgs/client/services/OrgService';
-import { IOrg } from '../../../orgs/shared/IOrgDTO';
-import { IProgram } from '../../../programs/shared/IProgramDTO';
-import { IProject } from '../../../projects/shared/IProjectDTO';
-import { IProposalResource, IProposalService } from '../../../proposals/client/services/ProposalService';
-import { IAuthenticationService } from '../../../users/client/services/AuthenticationService';
-import { IOpportunitiesService, IOpportunityResource } from '../services/OpportunitiesService';
+import {Ng1StateDeclaration, StateParams, StateProvider} from '@uirouter/angularjs';
+import angular, {resource} from 'angular';
+import {ICapabilitiesService, ICapabilityResource} from '../../../capabilities/client/services/CapabilitiesService';
+import {IOrgService} from '../../../orgs/client/services/OrgService';
+import {IOrg} from '../../../orgs/shared/IOrgDTO';
+import {IProgram} from '../../../programs/shared/IProgramDTO';
+import {IProject} from '../../../projects/shared/IProjectDTO';
+import {IProposalResource, IProposalService} from '../../../proposals/client/services/ProposalService';
+import {IAuthenticationService} from '../../../users/client/services/AuthenticationService';
+import {IOpportunitiesService, IOpportunityResource} from '../services/OpportunitiesService';
 
 export default class OpportunityRouter {
 

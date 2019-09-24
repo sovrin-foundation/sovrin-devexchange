@@ -10,7 +10,8 @@ class AuthPolicy {
 	private static instance: AuthPolicy;
 	private aclMem = new acl(new acl.memoryBackend());
 
-	private constructor() {}
+	private constructor() {
+	}
 
 	public invokeRolesPolicies = () => {
 		this.aclMem.allow([
@@ -44,6 +45,18 @@ class AuthPolicy {
 					{
 						resources: '/api/auth/reset/:token',
 						permissions: ['get', 'post']
+					},
+					{
+						resources: '/api/auth/saml',
+						permissions: 'get'
+					},
+					{
+						resources: '/api/auth/saml/consume',
+						permissions: 'post'
+					},
+					{
+						resources: '/api/auth/saml/signin',
+						permissions: 'post'
 					}
 				]
 			}
@@ -52,6 +65,10 @@ class AuthPolicy {
 
 	public isAllowed = (req, res, next) => {
 		const roles = req.user ? req.user.roles : ['guest'];
+		// tslint:disable-next-line:no-console
+		console.log(req);
+		// tslint:disable-next-line:no-console
+		console.log(res);
 
 		// Check for user roles
 		this.aclMem.areAnyRolesAllowed(roles, req.route.path, req.method.toLowerCase(), (err, isAllowed) => {
@@ -64,7 +81,7 @@ class AuthPolicy {
 					return next();
 				} else {
 					return res.status(403).json({
-						message: 'User is not authorized'
+						message: 'test'
 					});
 				}
 			}

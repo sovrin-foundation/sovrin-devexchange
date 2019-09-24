@@ -1,16 +1,17 @@
 'use strict';
 
-import { NextFunction, Request, Response } from 'express';
+import {NextFunction, Request, Response} from 'express';
 import _ from 'lodash';
-import { Types } from 'mongoose';
+import {Types} from 'mongoose';
 import multer from 'multer';
 import config from '../../../../config/ApplicationConfig';
+import {CapabilityModel} from '../../../capabilities/server/models/CapabilityModel';
 import CoreServerErrors from '../../../core/server/controllers/CoreServerErrors';
 import CoreServerHelpers from '../../../core/server/controllers/CoreServerHelpers';
 import MessagesServerController from '../../../messages/server/controllers/MessagesServerController';
-import { ProposalModel } from '../../../proposals/server/models/ProposalModel';
-import { IUserModel } from '../../../users/server/models/UserModel';
-import { IOrgModel, OrgModel } from '../models/OrgModel';
+import {ProposalModel} from '../../../proposals/server/models/ProposalModel';
+import {IUserModel} from '../../../users/server/models/UserModel';
+import {IOrgModel, OrgModel} from '../models/OrgModel';
 
 class OrgsServerController {
 	public static getInstance() {
@@ -36,6 +37,7 @@ class OrgsServerController {
 		this.removeMeFromCompany = this.removeMeFromCompany.bind(this);
 		this.myadmin = this.myadmin.bind(this);
 		this.my = this.my.bind(this);
+		this.checkIfRFQMet = this.checkIfRFQMet.bind(this);
 	}
 
 	public async getOrgById(id: string): Promise<IOrgModel> {
@@ -108,14 +110,18 @@ class OrgsServerController {
 
 		const newOrgInfo = req.body;
 		CoreServerHelpers.applyAudit(newOrgInfo, req.user);
-		OrgModel.findOneAndUpdate({ _id: req.org.id }, newOrgInfo, { new: true }, async (err, updatedOrg) => {
+		OrgModel.findOneAndUpdate({_id: req.org.id}, newOrgInfo, {new: true}, async (err, updatedOrg) => {
 			if (err) {
 				res.status(500).send({
 					message: CoreServerErrors.getErrorMessage(err)
 				});
 			} else {
 				const populatedOrg = await this.populateOrg(updatedOrg);
-				res.json(populatedOrg);
+
+				// Check whether org now meets the RFQ requirements and update the org if necessary
+				const orgWithUpdatedRFQ = await this.checkIfRFQMet(populatedOrg);
+
+				res.json(orgWithUpdatedRFQ);
 			}
 		});
 	}
@@ -167,7 +173,7 @@ class OrgsServerController {
 				.populate('admins', this.popfields)
 				.populate('joinRequests', '_id')
 				.exec();
-				res.json(orgs);
+			res.json(orgs);
 		} catch (error) {
 			res.status(422).send({
 				message: CoreServerErrors.getErrorMessage(error)
@@ -177,8 +183,9 @@ class OrgsServerController {
 
 	public async myadmin(req: Request, res: Response): Promise<void> {
 		try {
+			console.log(req);
 			const orgs = await OrgModel.find({
-				admins: { $in: [req.user._id] }
+				admins: {$in: [req.user._id]}
 			})
 				.populate('owner', '_id lastName firstName displayName profileImageURL')
 				.populate('createdBy', 'displayName')
@@ -212,7 +219,7 @@ class OrgsServerController {
 	public async my(req: Request, res: Response): Promise<void> {
 		try {
 			const orgs = await OrgModel.find({
-				members: { $in: [req.user._id] }
+				members: {$in: [req.user._id]}
 			})
 				.populate('owner', '_id lastName firstName displayName profileImageURL')
 				.populate('createdBy', 'displayName')
@@ -295,7 +302,7 @@ class OrgsServerController {
 
 		const org = req.org;
 		const storage = multer.diskStorage(config.uploads.diskStorage);
-		const upload = multer({ storage }).single('orgImageURL');
+		const upload = multer({storage}).single('orgImageURL');
 		const up = CoreServerHelpers.fileUploadFunctions(org, 'orgImageURL', req, res, upload, org.orgImageURL);
 
 		if (org) {
@@ -351,7 +358,10 @@ class OrgsServerController {
 			const updatedUser = await user.save();
 
 			// send notification to admins for org
-			await MessagesServerController.sendMessages('company-join-request', updatedOrg.admins, { org: updatedOrg, requestingUser: updatedUser });
+			await MessagesServerController.sendMessages('company-join-request', updatedOrg.admins, {
+				org: updatedOrg,
+				requestingUser: updatedUser
+			});
 
 			res.json({
 				user: updatedUser,
@@ -395,15 +405,19 @@ class OrgsServerController {
 			requestingMember.orgsMember.push(org);
 
 			// send notification to requesting user
-			await MessagesServerController.sendMessages('company-join-request-accepted', [requestingMember], { org });
+			await MessagesServerController.sendMessages('company-join-request-accepted', [requestingMember], {org});
 
 			// Save the org and user, return both in response
 			try {
 				const updatedOrg = await org.save();
 				const updatedUser = await requestingMember.save();
+
+				// Check whether the org now meets the RFQ requirements and update the org if necessary
+				const orgWithUpdatedRFQ = await this.checkIfRFQMet(updatedOrg);
+
 				res.json({
 					user: updatedUser,
-					org: updatedOrg
+					org: orgWithUpdatedRFQ
 				});
 			} catch (error) {
 				res.status(500).send({
@@ -440,7 +454,7 @@ class OrgsServerController {
 		requestingMember.orgsPending = requestingMember.orgsPending.filter(pendingOrg => pendingOrg.id !== org.id);
 
 		// send notification to requesting user
-		await MessagesServerController.sendMessages('company-join-request-declined', [requestingMember], { org });
+		await MessagesServerController.sendMessages('company-join-request-declined', [requestingMember], {org});
 
 		// Save the org and user and respond with both
 		try {
@@ -455,6 +469,85 @@ class OrgsServerController {
 				message: CoreServerErrors.getErrorMessage(error)
 			});
 			return;
+		}
+	}
+
+	public async filter(req: Request, res: Response): Promise<void> {
+		const pageNumber = parseInt(req.query.pageNumber, 10);
+		const itemsPerPage = parseInt(req.query.itemsPerPage, 10);
+		const searchTerm = req.query.searchTerm;
+
+		try {
+			// Filter orgs by the search term
+			const filterQuery = OrgModel.find({
+				name: {$regex: searchTerm, $options: 'i'}
+			})
+			// Populate orgs with only the necessary information
+				.select('name orgImageURL hasMetRFQ')
+				.populate('admins', '_id')
+				.populate('members', '_id')
+				.populate('joinRequests', '_id');
+
+			// Retrieve the list of all orgs that match the search term
+			const filteredOrgs = await filterQuery.exec();
+
+			// Paginate the list of filtered orgs
+			const pagedOrgs = await filterQuery.skip(pageNumber > 0 ? (pageNumber - 1) * itemsPerPage : 0)
+				.limit(itemsPerPage)
+				.exec();
+
+			// Return the list of filtered orgs for the current page and the total number of filtered items
+			res.json({'data': pagedOrgs, 'totalFilteredItems': filteredOrgs.length});
+
+		} catch (error) {
+			res.status(422).send({
+				message: CoreServerErrors.getErrorMessage(error)
+			});
+		}
+	}
+
+	// Checks whether an org meets the RFQ requirements and updates the org
+	public async checkIfRFQMet(org: IOrgModel): Promise<IOrgModel> {
+		try {
+			// Check whether the org now meets the RFQ requirements
+			const metRFQ = await this.hasMetRFQ(org);
+
+			// Update and save the org
+			org.hasMetRFQ = metRFQ ? true : false;
+			org = await org.save();
+			return org;
+
+		} catch (error) {
+			throw new Error(error.message);
+		}
+	}
+
+	// Checks that the given org has met the RFQ by checking:
+	// - that the org has at least 2 team members
+	// - that the org team members collectively cover all capabilities
+	// - that the org has accepted the terms of the RFQ
+	private async hasMetRFQ(org: IOrgModel): Promise<boolean> {
+		return org.members.length >= 2 && org.isAcceptedTerms && this.isCapable(org);
+	}
+
+	// Checks whether an org's team members collectively cover all capabilities
+	private async isCapable(org: IOrgModel): Promise<boolean> {
+		try {
+			// Retrieve a list of all capabilities
+			const allCapabilities = await CapabilityModel.find({})
+				.populate('skills')
+				.exec();
+
+			// Retrieve a list of all capabilities covered by members of the org
+			const memberCaps = org.members ? _.flatten(org.members.map(member => member.capabilities)) : [];
+			const orgCapabilities = _.uniqWith(memberCaps, (cap1, cap2) => cap1.code === cap2.code);
+
+			// Determine whether the members of the org collectively cover all capabilities
+			const overlap = _.intersectionWith(allCapabilities, orgCapabilities, (cap1, cap2) => cap1.code === cap2.code);
+			return overlap.length === allCapabilities.length;
+
+		} catch (error) {
+			throw new Error(error.message);
 		}
 	}
 
@@ -485,7 +578,7 @@ class OrgsServerController {
 	// Note: if a proposal is SUBMITTED, it will be set back to DRAFT if a user is removed
 	private async removeUserFromProposals(user: IUserModel, org: IOrgModel): Promise<void> {
 		const rightNow = new Date();
-		const proposals = await ProposalModel.find({ org: org._id })
+		const proposals = await ProposalModel.find({org: org._id})
 			.populate('opportunity', 'opportunityTypeCd deadline')
 			.exec();
 
@@ -510,15 +603,15 @@ class OrgsServerController {
 
 	private async addAdminToOrg(user: IUserModel, org: IOrgModel): Promise<IOrgModel> {
 		// depopulate the objects before adding since orgs and users are a circular reference, and mongoose chokes
-		org.admins.push(user.toObject({ depopulate: true }));
-		org.members.push(user.toObject({ depopulate: true }));
+		org.admins.push(user.toObject({depopulate: true}));
+		org.members.push(user.toObject({depopulate: true}));
 		return await org.save();
 	}
 
 	private async addOrgToUser(user: IUserModel, org: IOrgModel): Promise<IUserModel> {
 		// depopulate the objects before adding since orgs and users are a circular reference, and mongoose chokes
-		user.orgsAdmin.push(org.toObject({ depopulate: true }));
-		user.orgsMember.push(org.toObject({ depopulate: true }));
+		user.orgsAdmin.push(org.toObject({depopulate: true}));
+		user.orgsMember.push(org.toObject({depopulate: true}));
 		return await user.save();
 	}
 
@@ -535,8 +628,12 @@ class OrgsServerController {
 		// update org and return
 		org.members = org.members.filter(member => member.id !== user.id);
 		org.admins = org.admins.filter(admin => admin.id !== user.id);
-		const updatedOrg = org.save();
-		return updatedOrg;
+		const updatedOrg = await org.save();
+
+		// check whether the org now meets the RFQ requirements and update the org if necessary
+		const orgWithUpdatedRFQ = await this.checkIfRFQMet(updatedOrg);
+
+		return orgWithUpdatedRFQ;
 	}
 
 	// Populates the given org with referenced models

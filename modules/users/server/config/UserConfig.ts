@@ -5,6 +5,7 @@ import config from '../../../../config/ApplicationConfig';
 import { UserModel } from '../models/UserModel';
 import GitHubAuthStrategy from './strategies/GitHubStrategy';
 import LocalAuthStrategy from './strategies/LocalStrategy';
+import SamlAuthStrategy from './strategies/SamlStrategy';
 
 class UserConfig {
 	public static getInstance() {
@@ -13,7 +14,9 @@ class UserConfig {
 
 	private static instance: UserConfig;
 
-	private constructor() {}
+	private constructor() {
+	}
+
 	public init = app => {
 		// Serialize sessions
 		passport.serializeUser((user: any, done) => {
@@ -37,6 +40,9 @@ class UserConfig {
 
 		const githubAuthStrategy = new GitHubAuthStrategy();
 		githubAuthStrategy.init(config);
+
+		const samlAuthStrategy = new SamlAuthStrategy();
+		samlAuthStrategy.init();
 
 		const localAuthStrategy = new LocalAuthStrategy();
 		localAuthStrategy.init();
