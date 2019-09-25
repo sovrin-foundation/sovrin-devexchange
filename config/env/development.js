@@ -69,7 +69,7 @@ var devConfig = {
 			minOptionalTestsToPass: 1
 		}
 	},
-	livereload: true
+	livereload: process.env.LIVERELOAD || true
 };
 
 // If a mailer service provider (such as gmail) is specified, use the provider...
