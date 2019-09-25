@@ -20,6 +20,7 @@
 		"allowSyntheticDefaultImports": true
 	},
 	"exclude": [
+		"node_modules/@types",
 		"node_modules",
 		"server-dist",
 		"public/dist"
