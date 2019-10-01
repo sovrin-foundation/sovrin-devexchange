@@ -1,1 +1,1 @@
-web: npm start --quiet
+web: npm quiet
