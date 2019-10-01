@@ -40,7 +40,7 @@ exports.loadLiveReload = () => ({
 	plugins: [
 		new LiveReloadPlugin()
 	],
-})
+});
 
 exports.loadServerViews = () => ({
 	plugins: [

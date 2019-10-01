@@ -87,7 +87,7 @@ const devConfig = merge([
 			publicPath: ASSET_PATH,
 			filename: BUILD_FILE_NAMES.bundle,
 		},
-		watch: true,
+		watch: process.env.LIVERELOAD || false,
 	},
 	parts.clean(paths.build),
 	parts.loadLiveReload(),

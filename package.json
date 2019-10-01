@@ -20,7 +20,8 @@
     "quiet": "gulp quiet",
     "debug": "gulp debug",
     "prod": "gulp prod",
-    "start": "node server-dist/server.js"
+    "start": "node server-dist/server.js",
+    "quiet-start": "set LIVERELOAD=false&& node server-dist/server.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.4.1",
