@@ -96,7 +96,7 @@ angular.module('users.services').factory('UsersService', [
 			method: 'POST',
 			url: '/api/auth/saml/signin'
 		};
-
+/* tslint:disable */
 		return $resource(
 			'/api/users',
 			{},

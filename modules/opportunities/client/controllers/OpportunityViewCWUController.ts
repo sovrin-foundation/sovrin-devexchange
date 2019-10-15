@@ -31,6 +31,7 @@ export default class OpportunityViewCWUController implements IController {
 	public start: string;
 	public stripe;
 	public opportunityPaid = false;
+	public loggedIn: boolean;
 
 	private approvalAction: string;
 	private approvalType: string;
@@ -53,7 +54,7 @@ export default class OpportunityViewCWUController implements IController {
 		this.isAdmin = this.isUser && this.AuthenticationService.user.roles.indexOf('admin') !== -1;
 		this.isGov = this.isUser && this.AuthenticationService.user.roles.indexOf('gov') !== -1;
 		this.hasEmail = this.isUser && this.AuthenticationService.user.email !== '';
-
+		this.loggedIn = !!this.AuthenticationService.permissions().loggedIn;
 		this.refreshOpportunity(this.opportunity);
 	}
 
