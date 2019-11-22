@@ -1,0 +1,4 @@
+[submodule "code-with-us"]
+	path = code-with-us
+	url = git@github.com:BCDevExchange/code-with-us.git
+	branch = master
