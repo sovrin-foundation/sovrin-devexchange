@@ -12,13 +12,13 @@ h2. Build and CI/CD Promotion Pipeline Setup
 - To create the BuildConfiguration within your 'tools' project, use the ```oc``` command and "esm-build-template.json" file in the templates directory as follows
 
 ```
-oc process -f devex-build-template.json -v NAME=<product_name> -v SOURCE_REPOSITORY_URL=https://github.com/BCDevExchange/devex.git -v SOURCE_REPOSITORY_REF=<branch>| oc create -n <team_name>-<product_name>-tools -f - 
+oc process -f devex-build-template.json -v NAME=<product_name> -v SOURCE_REPOSITORY_URL=https://github.com/sovrin-foundation/sovrin-devexchange.git -v SOURCE_REPOSITORY_REF=<branch>| oc create -n <team_name>-<product_name>-tools -f - 
 ```
 
 For example:
 
 ```
-oc process -f devex-build-template.json -v NAME=devxp -v SOURCE_REPOSITORY_URL=https://github.com/BCDevExchange/devex.git -v SOURCE_REPOSITORY_REF=master | oc create -n devex-platform-tools -f -
+oc process -f devex-build-template.json -v NAME=devxp -v SOURCE_REPOSITORY_URL=https://github.com/sovrin-foundation/sovrin-devexchange.git -v SOURCE_REPOSITORY_REF=master | oc create -n devex-platform-tools -f -
 ```
 
 - Configure the access controls to allow the deployment environment projects to pull images from the 'tools' project:

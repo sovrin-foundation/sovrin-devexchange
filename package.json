@@ -3,11 +3,11 @@
   "description": "BC Developer's Exchange - Code With Us & Sprint With Us",
   "version": "1.0.0",
   "private": false,
-  "author": "https://github.com/BCDevExchange/devex/graphs/contributors",
+  "author": "https://github.com/sovrin-foundation/sovrin-devexchange/graphs/contributors",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/BCDevExchange/devex.git"
+    "url": "https://github.com/sovrin-foundation/sovrin-devexchange.git"
   },
   "engines": {
     "node": ">=8.0.0",
