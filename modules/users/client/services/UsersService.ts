@@ -111,7 +111,7 @@ angular.module('users.services').factory('UsersService', [
 				signin: signinAction,
 				signout: signoutAction,
 				registrationStatus: registrationStatusAction,
-				samlSignin: samlSignin
+				samlSignin
 			}
 		) as IUserService;
 	}
