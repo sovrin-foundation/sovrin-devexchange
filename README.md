@@ -10,9 +10,9 @@ The [BCDevExchange](https://bcdevexchange.org) is a platform that provides new w
 
 ## Table of Contents
 
-* [Contributing](https://github.com/BCDevExchange/devex#contribute)
-* [Development](https://github.com/BCDevExchange/devex#development)
-* [Copyright and License](https://github.com/BCDevExchange/devex#copyright-and-license)
+* [Contributing](https://github.com/sovrin-foundation/sovrin-devexchange#contribute)
+* [Development](https://github.com/sovrin-foundation/sovrin-devexchange#development)
+* [Copyright and License](https://github.com/sovrin-foundation/sovrin-devexchange#copyright-and-license)
 
 ***
 
@@ -20,7 +20,7 @@ The [BCDevExchange](https://bcdevexchange.org) is a platform that provides new w
 
 ## Contribute
 
-We are open to pull requests. Please read our [contributing guidelines](https://github.com/BCDevExchange/devex/blob/master/CONTRIBUTING.md). If you are making a pull request, please refer to our [pull request template](https://github.com/BCDevExchange/devex/blob/develop/.github/PULL_REQUEST_TEMPLATE.md).
+We are open to pull requests. Please read our [contributing guidelines](https://github.com/sovrin-foundation/sovrin-devexchange/blob/master/CONTRIBUTING.md). If you are making a pull request, please refer to our [pull request template](https://github.com/sovrin-foundation/sovrin-devexchange/blob/develop/.github/PULL_REQUEST_TEMPLATE.md).
 
 ## Development
 
@@ -82,8 +82,8 @@ By default, the `DEVEX_PROD` environment variable is set to false, and the `MONG
 
 If the `DEVEX_PROD` environment variable is set to true, the development accounts will not be seeded.  An admin account will be created and will use the password specified in the `ADMINPW` environment variable.
 
-To use the GitHub OAuth login, you'll need to set up a GitHub Client ID and Secret (see [environment setup](https://github.com/BCDevExchange/devex#environment-setup))
+To use the GitHub OAuth login, you'll need to set up a GitHub Client ID and Secret (see [environment setup](https://github.com/sovrin-foundation/sovrin-devexchange#environment-setup))
 
 ## Copyright and License
 
-Code and documentation copyright 2016-2019 the [BC Developers' Exchange](https://bcdevexchange.org). Code released under the [Apache License, Version 2.0](https://github.com/BCDevExchange/devex/blob/master/LICENSE).
+Code and documentation copyright 2016-2019 the [BC Developers' Exchange](https://bcdevexchange.org). Code released under the [Apache License, Version 2.0](https://github.com/sovrin-foundation/sovrin-devexchange/blob/master/LICENSE).

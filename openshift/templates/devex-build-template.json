@@ -600,7 +600,7 @@
 			"name": "SOURCE_REPOSITORY_URL",
 			"displayName": "Git Repository URL",
 			"description": "The URL of the repository with your application source code.",
-			"value": "https://github.com/BCDevExchange/devex"
+			"value": "https://github.com/sovrin-foundation/sovrin-devexchange"
 		},
 		{
 			"name": "SOURCE_REPOSITORY_REF",
