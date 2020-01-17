@@ -1,4 +1,8 @@
 // "Back Nav" (e.g. "All Opportunities") sit at the top of detail pages to go back to list page
+.bg-dark {
+  background-image: linear-gradient(to right, #003FAF, #001B42) !important;
+}
+
 .back-nav {
   padding: .75rem 0;
   background: $gray-lightest;
@@ -6,22 +10,26 @@
   z-index: 2;
   position: sticky;
   top: 0;
+
   a {
     color: $gray;
     display: flex;
     align-items: center;
+
     &:hover,
     &:active:hover {
       color: $gray;
     }
+
     &:active,
     &:focus {
       color: $gray;
     }
+
     i {
       font-size: 1.3rem;
       margin-right: .25rem;
-    }  
+    }
   }
 }
 
@@ -41,11 +49,13 @@
 
 .nav-pills {
   margin: 0 0 2em;
+
   > li {
     > a:hover {
       background-color: transparent;
     }
   }
+
   > li.active,
   li.active:hover {
     > a {
@@ -59,7 +69,9 @@
   .nav-pills {
     display: block;
   }
-} /* Make nav-pills stack on xs displays */
+}
+
+/* Make nav-pills stack on xs displays */
 
 // Navigation tabs
 // .nav-tabs {
