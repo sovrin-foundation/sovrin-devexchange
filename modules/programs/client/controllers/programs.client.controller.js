@@ -82,19 +82,24 @@
 	//
 	// =========================================================================
 	.controller('ProgramEditController', ['$scope', '$state', '$window', '$timeout', 'Upload', 'program', 'editing', 'AuthenticationService', 'Notification', 'previousState', 'ProjectsService', 'OpportunitiesService', function ($scope, $state, $window, $timeout, Upload, program, editing, authenticationService, Notification, previousState, ProjectsService, OpportunitiesService) {
-		var vm            = this;
+		var vm = this;
+		vm.stitle = false;
 		vm.user = authenticationService.user;
 		vm.fileSelected = false;
 		vm.progress = 0;
 		vm.croppedDataUrl = '';
 		vm.picFile = null;
-
 		vm.previousState = previousState;
 		vm.isAdmin                 = authenticationService.user && !!~authenticationService.user.roles.indexOf ('admin');
 		vm.isGov                   = authenticationService.user && !!~authenticationService.user.roles.indexOf ('gov');
 		vm.editing        = editing;
 		vm.program        = program;
 		vm.authentication = authenticationService;
+		vm.toggleTitle = function(){
+			console.log(vm.stitle);
+			console.log("toggled");
+			vm.stitle = !vm.stitle;
+		};
 		//
 		// if the user doesn't have the right access then kick them out
 		//
@@ -285,6 +290,5 @@
 			}
 			else vm.fileSelected = true;
 		};
-	}])
-	;
+	}]);
 }());

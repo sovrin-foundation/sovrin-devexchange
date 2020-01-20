@@ -16,8 +16,7 @@ var devConfig = {
 			autoReconnect: true,
 			reconnectTries: Number.MAX_VALUE,
 			reconnectInterval: 1000,
-			useNewUrlParser: true,
-			autoIndex: false
+			useNewUrlParser: true, sautoIndex: false
 		},
 		// Enable mongoose debug mode
 		debug: process.env.MONGODB_DEBUG || false
@@ -55,8 +54,8 @@ var devConfig = {
 		title: defaultEnvConfig.app.title + ' - Development Environment'
 	},
 	github: {
-		clientID: process.env.GITHUB_ID || 'APP_ID',
-		clientSecret: process.env.GITHUB_SECRET || 'APP_SECRET',
+		clientID: process.env.GITHUB_ID || '152fb6b3282a0cbf3b31',
+		clientSecret: process.env.GITHUB_SECRET || 'a729582cd33b39dd4793e30f8929eb8d4e54ac83',
 		callbackURL: '/api/auth/github/callback',
 		personalAccessToken: process.env.GITHUB_ACCESS_TOKEN || 'GITHUB_ACCESS_TOKEN'
 	},

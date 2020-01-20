@@ -7,11 +7,11 @@ module.exports = {
 		description: 'Better ways for government and developers to work together',
 		keywords: 'developer, government, codewithus, agile, digitial service',
 		googleAnalyticsTrackingID: process.env.GOOGLE_ANALYTICS_TRACKING_ID || 'GOOGLE_ANALYTICS_TRACKING_ID',
-		domain: process.env.DOMAIN || 'https://localhost:4000',
+		domain: process.env.DOMAIN || 'https://localhost:3000',
 		googleRecaptchaSiteID: process.env.RECAPTCHA_SITE_ID
 	},
 	devexProd: process.env.DEVEX_PROD || false,
-	port: process.env.PORT || 4000,
+	port: process.env.PORT || 3000,
 	host: process.env.HOST || '0.0.0.0',
 	// DOMAIN config should be set to the fully qualified application accessible
 	// URL. For example: https://www.myapp.com (including port if required).

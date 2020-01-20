@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<md:EntityDescriptor entityID="https://authority-sp.azurewebsites.net" ID="_a28479ca-33a0-4ce1-8f6c-be7ff02c5d06" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata">
-  <md:IDPSSODescriptor ID="_d2d171de-d35d-4903-8458-c76de9a29fa7" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+<md:EntityDescriptor entityID="https://authority-sp.azurewebsites.net" ID="_29b98aae-65b8-405d-9e6c-0092370e1f59" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata">
+  <md:IDPSSODescriptor ID="_4315c6a3-488a-481b-acc1-bcbd0b1c05bb" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
     <md:KeyDescriptor>
       <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
         <X509Data>
@@ -8,7 +8,7 @@
         </X509Data>
       </KeyInfo>
     </md:KeyDescriptor>
-    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://passport-sp.idramp.com/SAML/SSOService" />
-    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://passport-sp.idramp.com/SAML/SSOService" />
+    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://authority-idp-test-aries.azurewebsites.net/SamlSp/SSOService" />
+    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://authority-idp-test-aries.azurewebsites.net/SamlSp/SSOService" />
   </md:IDPSSODescriptor>
 </md:EntityDescriptor>

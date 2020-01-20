@@ -8,6 +8,7 @@ import {IUserModel, UserModel} from '../../models/UserModel';
 import * as fs from "fs";
 import * as samlify from 'samlify';
 import * as url from "url";
+import Logger from '../../../../../config/lib/LoggerUtil';
 
 class UserAuthenticationController {
 	public static getInstance() {
@@ -17,6 +18,8 @@ class UserAuthenticationController {
 	private static instance: UserAuthenticationController;
 
 	private sendMessages = MessagesServerController.sendMessages;
+
+	private logger = new Logger();
 
 	// URLs for which user can't be redirected on signin
 	private noReturnUrls = ['/authentication/signin', '/authentication/signup'];
@@ -250,7 +253,7 @@ class UserAuthenticationController {
 							// And save the user
 							user.save(saveErr => {
 								if (saveErr) {
-									console.error(saveErr);
+									console.log(saveErr);
 								}
 								this.samlSignin(user, req, res);
 							});
@@ -413,6 +416,8 @@ class UserAuthenticationController {
 
 		this.sp.parseLoginResponse(this.idp, 'post', req)
 			.then(parseResult => {
+				console.log('Parse Results');
+				console.log(parseResult);
 				if (parseResult.extract.attributes.email) {
 					this.cookieVault.write(req, this.COOKIE_CODE);
 					// this.saveSamlUserProfile(req, parseResult.extract.attributes, this.samlAuthCallback);

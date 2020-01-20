@@ -1,6 +1,6 @@
 'use strict';
 
-import {UIViewScrollProvider} from '@uirouter/angularjs/lib/viewScroll';
+import { UIViewScrollProvider } from '@uirouter/angularjs/lib/viewScroll';
 import angular, {
 	ICompileProvider,
 	idle,
@@ -128,6 +128,8 @@ class ApplicationConfiguration implements IApplicationConfiguration {
 		if (window.location.hash && window.location.hash === '#_=_' && (window.history && history.pushState)) {
 			window.history.pushState('', document.title, window.location.pathname);
 		}
+
+		window.FontAwesomeConfig = { autoReplaceSvg: false };
 
 		// Then init the app
 		angular.bootstrap(document, [this.applicationModuleName]);

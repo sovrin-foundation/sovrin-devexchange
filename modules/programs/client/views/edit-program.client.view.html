@@ -20,8 +20,9 @@
             <div class="form-group">
               <label class="control-label" for="title">Title</label>
 
-              <i class="fas fa-question-circle input-help-source" ng-click="stitle = !stitle"></i>
-              <div class="input-help alert alert-info" ng-show="stitle">The name of your public sector program or
+              <i class="fas fa-question-circle input-help-source" ng-click="vm.stitle = !vm.stitle"></i>
+              <p>test {{vm.stitle}}</p>
+              <div class="input-help alert alert-info" ng-show="vm.stitle">The name of your public sector program or
                 organization</div>
 
               <input data-automation-id="text-program-title" name="title" type="text" ng-model="vm.program.title" id="title"
