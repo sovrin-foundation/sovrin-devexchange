@@ -173,7 +173,7 @@
         class="fas fa-bullhorn"></i> Publish
       </button>
 
-      <button ng-if="!vm.opportunityPaid" class="btn btn-danger float-right"
+      <button ng-if="vm.showPayButton()" class="btn btn-danger float-right"
               data-automation-id="button-opportunity-pay"
               ng-click="vm.showPaymentModal(vm.opportunity)">
         <i class="fa fa-credit-card"></i>

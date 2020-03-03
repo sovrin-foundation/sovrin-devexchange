@@ -1,11 +1,11 @@
 'use strict';
 
-import {StateService} from '@uirouter/core';
-import angular, {IFilterCurrency, IFormController, uiNotification} from 'angular';
-import {IDataService} from '../../../core/client/services/DataService';
-import {IProject} from '../../../projects/shared/IProjectDTO';
-import {IAuthenticationService} from '../../../users/client/services/AuthenticationService';
-import {IOpportunitiesService, IOpportunityResource} from '../services/OpportunitiesService';
+import { StateService } from '@uirouter/core';
+import angular, { IFilterCurrency, IFormController, uiNotification } from 'angular';
+import { IDataService } from '../../../core/client/services/DataService';
+import { IProject } from '../../../projects/shared/IProjectDTO';
+import { IAuthenticationService } from '../../../users/client/services/AuthenticationService';
+import { IOpportunitiesService, IOpportunityResource } from '../services/OpportunitiesService';
 
 export default class OpportunityEditCWUController {
 	public static $inject = ['$state', '$filter', 'opportunity', 'editing', 'projects', 'AuthenticationService', 'Notification', 'DataService', 'ask', 'TinyMceConfiguration', 'OpportunitiesService'];
@@ -68,6 +68,14 @@ export default class OpportunityEditCWUController {
 
 	public updateProgramProject() {
 		this.opportunity.program = this.opportunity.project.program;
+	}
+
+	public showPayButton() {
+		// tslint:disable-next-line:no-console
+		console.log(this.opportunity.userIs.admin);
+		// tslint:disable-next-line:no-console
+		console.log(this.opportunity);
+		return this.opportunity.userIs.admin;
 	}
 
 	// remove the opportunity with some confirmation
@@ -138,7 +146,7 @@ export default class OpportunityEditCWUController {
 
 			// if creating a new opportunity, transition to the edit view after saving
 			if (!this.editing) {
-				this.$state.go('opportunityadmin.editcwu', {opportunityId: this.opportunity.code});
+				this.$state.go('opportunityadmin.editcwu', { opportunityId: this.opportunity.code });
 			}
 		} catch (error) {
 			this.Notification.error({

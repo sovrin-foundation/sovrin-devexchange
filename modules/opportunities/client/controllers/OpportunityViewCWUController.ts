@@ -173,6 +173,10 @@ export default class OpportunityViewCWUController implements IController {
 		}
 	}
 
+	public showPayButton(): boolean {
+		return this.opportunityPaid === false && this.opportunity.userIs.admin;
+	}
+
 	// unassign an opportunitu
 	public async unassign(): Promise<void> {
 		const question = 'Confirm that you want to unassign this opportunity from the assigned proponent';
@@ -321,16 +325,19 @@ export default class OpportunityViewCWUController implements IController {
 			});
 
 		modalInstance.result.then((result) => {
+			// tslint:disable-next-line:no-console
 			this.opportunity.payment = result.payment;
-			if (result.$promise.$$state.status !== 403) {
+			if (result.$promise.$$state.value.status !== 403) {
 				this.Notification.success('Payment Accepted');
 				this.opportunity.payment = result.payment;
-				this.paid();
-				this.refreshOpportunity(this.opportunity);
-				setTimeout(() => {
-					window.location.reload();
-				}, 2000);
+			} else {
+				this.Notification.error('Payment Declined');
 			}
+			this.refreshOpportunity(this.opportunity);
+			this.paid();
+			setTimeout(() => {
+				 window.location.reload();
+			}, 2000);
 		});
 	}
 
