@@ -72,7 +72,7 @@
     "ng-currency": "^1.2.5",
     "ng-file-upload": "^12.2.13",
     "ng-idle": "^1.3.2",
-    "node-fetch": "2.1.2",
+    "node-fetch": "2.6.1",
     "nodemailer": "4.6.8",
     "nsp": "3.2.1",
     "owasp-password-strength-test": "1.3.0",
